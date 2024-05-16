@@ -3,7 +3,7 @@ package com.liskovsoft.smartyoutubetv2.common.prefs;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build.VERSION;
-import com.liskovsoft.mediaserviceinterfaces.data.SponsorSegment;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.SponsorSegment;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.prefs.GlobalPreferences;
 import com.liskovsoft.smartyoutubetv2.common.R;
@@ -218,7 +218,7 @@ public class ContentBlockData {
     private void restoreState() {
         String data = mAppPrefs.getData(CONTENT_BLOCK_DATA);
 
-        String[] split = Helpers.splitObject(data);
+        String[] split = Helpers.splitData(data);
 
         mIsSponsorBlockEnabled = Helpers.parseBoolean(split, 0, VERSION.SDK_INT > 19); // Android 4 may have memory problems
         // categories: index 2
@@ -280,7 +280,7 @@ public class ContentBlockData {
         String actions = Helpers.mergeArray(mActions.toArray());
         String excludedChannels = Helpers.mergeArray(mExcludedChannels.toArray());
 
-        mAppPrefs.setData(CONTENT_BLOCK_DATA, Helpers.mergeObject(
+        mAppPrefs.setData(CONTENT_BLOCK_DATA, Helpers.mergeData(
                 mIsSponsorBlockEnabled, null, null, null,
                 null, null, actions, colorCategories, mIsDontSkipSegmentAgainEnabled,
                 excludedChannels

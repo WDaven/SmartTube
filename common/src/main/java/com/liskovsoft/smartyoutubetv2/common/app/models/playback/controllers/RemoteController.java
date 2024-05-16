@@ -5,9 +5,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.KeyEvent;
 import androidx.annotation.Nullable;
-import com.liskovsoft.mediaserviceinterfaces.HubService;
-import com.liskovsoft.mediaserviceinterfaces.RemoteControlService;
-import com.liskovsoft.mediaserviceinterfaces.data.Command;
+import com.liskovsoft.mediaserviceinterfaces.yt.MotherService;
+import com.liskovsoft.mediaserviceinterfaces.yt.RemoteControlService;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.Command;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.sharedutils.rx.RxHelper;
@@ -22,31 +22,27 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.common.DataChangeBase.OnDataC
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.RemoteControlData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
-import com.liskovsoft.youtubeapi.service.YouTubeHubService;
+import com.liskovsoft.youtubeapi.service.YouTubeMotherService;
 import io.reactivex.disposables.Disposable;
 
 public class RemoteController extends PlayerEventListenerHelper implements OnDataChange {
     private static final String TAG = RemoteController.class.getSimpleName();
     private final RemoteControlService mRemoteControlService;
     private final RemoteControlData mRemoteControlData;
-    private final SuggestionsController mSuggestionsLoader;
-    private final VideoLoaderController mVideoLoader;
     private Disposable mListeningAction;
     private Disposable mPostStartPlayAction;
     private Disposable mPostStateAction;
     private Disposable mPostVolumeAction;
     private Video mVideo;
     private boolean mConnected;
-    private int mIsGlobalVolumeWorking = -1;
     private long mNewVideoPositionMs;
     private Disposable mActionDown;
     private Disposable mActionUp;
 
-    public RemoteController(Context context, SuggestionsController suggestionsLoader, VideoLoaderController videoLoader) {
-        HubService hubService = YouTubeHubService.instance();
-        mSuggestionsLoader = suggestionsLoader;
-        mVideoLoader = videoLoader;
-        mRemoteControlService = hubService.getRemoteControlService();
+    public RemoteController(Context context) {
+        // Start receiving a commands as early as possible
+        MotherService service = YouTubeMotherService.instance();
+        mRemoteControlService = service.getRemoteControlService();
         mRemoteControlData = RemoteControlData.instance(context);
         mRemoteControlData.setOnChange(this);
         tryListening();
@@ -261,7 +257,7 @@ public class RemoteController extends PlayerEventListenerHelper implements OnDat
                         video.remotePlaylistId = command.getPlaylistId();
                         video.playlistParams = null;
                         video.isRemote = true;
-                        mSuggestionsLoader.loadSuggestions(video);
+                        getController(SuggestionsController.class).loadSuggestions(video);
                     }
                 }
                 break;
@@ -298,7 +294,7 @@ public class RemoteController extends PlayerEventListenerHelper implements OnDat
             case Command.TYPE_NEXT:
                 if (getMainController() != null) {
                     movePlayerToForeground();
-                    mVideoLoader.loadNext();
+                    getController(VideoLoaderController.class).loadNext();
                 } else {
                     openNewVideo(mVideo);
                 }
@@ -307,7 +303,7 @@ public class RemoteController extends PlayerEventListenerHelper implements OnDat
                 if (getMainController() != null && getPlayer() != null) {
                     movePlayerToForeground();
                     // Switch immediately. Skip position reset logic.
-                    mVideoLoader.loadPrevious();
+                    getController(VideoLoaderController.class).loadPrevious();
                 } else {
                     openNewVideo(mVideo);
                 }
@@ -354,7 +350,7 @@ public class RemoteController extends PlayerEventListenerHelper implements OnDat
                 if (getContext() != null && mRemoteControlData.isFinishOnDisconnectEnabled()) {
                     // NOTE: It's not a good idea to remember connection state (mConnected) at this point.
                     MessageHelpers.showLongMessage(getContext(), getContext().getString(R.string.device_disconnected, command.getDeviceName()));
-                    ViewManager.instance(getContext()).properlyFinishTheApp(getContext());
+                    Utils.properlyFinishTheApp(getContext());
                 }
                 //if (mRemoteControlData.isConnectMessagesEnabled()) {
                 //    MessageHelpers.showLongMessage(getContext(), getContext().getString(R.string.device_disconnected, command.getDeviceName()));

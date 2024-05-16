@@ -1,11 +1,11 @@
 package com.liskovsoft.smartyoutubetv2.common.app.models.playback.controllers;
 
 import androidx.core.content.ContextCompat;
-import com.liskovsoft.mediaserviceinterfaces.MediaItemService;
-import com.liskovsoft.mediaserviceinterfaces.data.ChapterItem;
-import com.liskovsoft.mediaserviceinterfaces.data.DislikeData;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaItemMetadata;
+import com.liskovsoft.mediaserviceinterfaces.yt.MediaItemService;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.ChapterItem;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.DislikeData;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaGroup;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaItemMetadata;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.sharedutils.rx.RxHelper;
@@ -24,7 +24,7 @@ import com.liskovsoft.smartyoutubetv2.common.misc.MediaServiceManager;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerTweaksData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
-import com.liskovsoft.youtubeapi.service.YouTubeHubService;
+import com.liskovsoft.youtubeapi.service.YouTubeMotherService;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
@@ -33,11 +33,9 @@ import java.util.List;
 
 public class SuggestionsController extends PlayerEventListenerHelper {
     private static final String TAG = SuggestionsController.class.getSimpleName();
-    private final List<MetadataListener> mListeners = new ArrayList<>();
     private final List<Disposable> mActions = new ArrayList<>();
     private PlayerTweaksData mPlayerTweaksData;
     private GeneralData mGeneralData;
-    private MediaGroup mLastScrollGroup;
     private MediaItemService mMediaItemService;
     private DeArrowProcessor mDeArrowProcessor;
     private Video mNextVideo;
@@ -48,10 +46,6 @@ public class SuggestionsController extends PlayerEventListenerHelper {
     private final Runnable mChapterHandler = this::startChapterNotificationServiceIfNeededInt;
     private static final int MAX_PLAYLIST_CONTINUATIONS = 20;
     private static final int CHAPTER_NOTIFICATION_Id = 565;
-
-    public interface MetadataListener {
-        void onMetadata(MediaItemMetadata metadata);
-    }
 
     private interface OnVideoGroup {
         void onVideoGroup(VideoGroup group);
@@ -66,7 +60,7 @@ public class SuggestionsController extends PlayerEventListenerHelper {
         mPlayerTweaksData = PlayerTweaksData.instance(getContext());
         mGeneralData = GeneralData.instance(getContext());
         mDeArrowProcessor = new DeArrowProcessor(getContext(), PlaybackPresenter.instance(getContext())::syncItem);
-        mMediaItemService = YouTubeHubService.instance().getMediaItemService();
+        mMediaItemService = YouTubeMotherService.instance().getMediaItemService();
     }
 
     @Override
@@ -77,9 +71,6 @@ public class SuggestionsController extends PlayerEventListenerHelper {
         //mCurrentGroup = video.getGroup(); // disable garbage collected
         appendNextSectionVideoIfNeeded(video);
         appendPreviousSectionVideoIfNeeded(video);
-        if (mGeneralData.isHideWatchedFromNotificationsEnabled()) {
-            MediaServiceManager.instance().hideNotification(video);
-        }
     }
 
     /**
@@ -172,13 +163,6 @@ public class SuggestionsController extends PlayerEventListenerHelper {
             return;
         }
 
-        if (mLastScrollGroup == group.getMediaGroup()) {
-            Log.d(TAG, "Can't continue group. Another action is running.");
-            return;
-        }
-
-        mLastScrollGroup = group.getMediaGroup();
-
         Log.d(TAG, "continueGroup: start continue group: " + group.getTitle());
 
         if (showLoading) {
@@ -214,7 +198,6 @@ public class SuggestionsController extends PlayerEventListenerHelper {
                             if (getPlayer() != null) {
                                 getPlayer().showProgressBar(false);
                             }
-                            mLastScrollGroup = null;
                         }
                 );
 
@@ -541,7 +524,7 @@ public class SuggestionsController extends PlayerEventListenerHelper {
         }
     }
 
-    public void focusAndContinueIfNeeded(VideoGroup group) {
+    private void focusAndContinueIfNeeded(VideoGroup group) {
         Video video = getPlayer().getVideo();
 
         if (group == null || group.isEmpty() || video == null || !video.hasVideo()) {
@@ -553,7 +536,7 @@ public class SuggestionsController extends PlayerEventListenerHelper {
         if (index >= 0) { // continuation group starts with zero index
             Log.d(TAG, "Found current video index: %s", index);
             Video found = group.getVideos().get(index);
-            if (!found.isMix()) {
+            if (!found.isMix() || isSectionPlaylistEnabled(video)) {
                 getPlayer().focusSuggestedItem(found);
             }
             mFocusCount = 0; // Stop the continuation loop
@@ -702,33 +685,31 @@ public class SuggestionsController extends PlayerEventListenerHelper {
         return currentChapter;
     }
 
-    public void addMetadataListener(MetadataListener listener) {
-        if (!mListeners.contains(listener)) {
-            mListeners.add(listener);
-        }
-    }
-
     private void callListener(MediaItemMetadata mediaItemMetadata) {
         if (mediaItemMetadata != null) {
-            for (MetadataListener listener : mListeners) {
-                listener.onMetadata(mediaItemMetadata);
-            }
+            getMainController().onMetadata(mediaItemMetadata);
         }
     }
 
     private void disposeActions() {
         RxHelper.disposeActions(mActions);
-        mLastScrollGroup = null;
         mChapters = null;
     }
 
     private boolean isSectionPlaylistEnabled(Video video) {
         return mPlayerTweaksData.isSectionPlaylistEnabled() && video != null && video.getGroup() != null &&
-                (video.playlistId == null || video.nextMediaItem == null) && (!video.isRemote || video.remotePlaylistId == null);
+                (video.playlistId == null || video.nextMediaItem == null || video.belongsToSearch()) && (!video.isRemote || video.remotePlaylistId == null);
     }
 
     private void appendDislikes(Video video) {
-        if (video == null || !mPlayerTweaksData.isLikesCounterEnabled()) {
+        if (video == null) {
+            return;
+        }
+
+        if (!mPlayerTweaksData.isLikesCounterEnabled()) {
+            video.likeCount = null;
+            video.dislikeCount = null;
+            getPlayer().setVideo(video);
             return;
         }
 

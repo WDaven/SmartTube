@@ -3,7 +3,7 @@ package com.liskovsoft.smartyoutubetv2.common.prefs;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaGroup;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.locale.LocaleUtility;
 import com.liskovsoft.sharedutils.prefs.GlobalPreferences;
@@ -15,11 +15,9 @@ import com.liskovsoft.smartyoutubetv2.common.utils.CopyOnWriteHashList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GeneralData implements ProfileChangeListener {
@@ -44,7 +42,7 @@ public class GeneralData implements ProfileChangeListener {
     private int mBootSectionId;
     private int mAppExitShortcut;
     private int mPlayerExitShortcut;
-    private boolean mIsReturnToLauncherEnabled;
+    private boolean mIsPlayerOnlyModeEnabled;
     private int mBackgroundShortcut;
     private boolean mIsHideShortsFromSubscriptionsEnabled;
     private boolean mIsHideUpcomingEnabled;
@@ -87,17 +85,21 @@ public class GeneralData implements ProfileChangeListener {
     private boolean mIsOldChannelLookEnabled;
     private boolean mIsOldUpdateNotificationsEnabled;
     private boolean mRememberSubscriptionsPosition;
+    private boolean mRememberPinnedPosition;
     private boolean mIsRemapDpadUpToSpeedEnabled;
     private boolean mIsRemapDpadUpToVolumeEnabled;
     private boolean mIsRemapDpadLeftToVolumeEnabled;
     private boolean mIsHideWatchedFromNotificationsEnabled;
-    private Video mSelectedSubscriptionsItem;
+    private boolean mIsHideWatchedFromWatchLaterEnabled;
     private List<String> mChangelog;
+    private Map<String, Integer> mPlaylistOrder;
     private final Map<Integer, Integer> mDefaultSections = new LinkedHashMap<>();
-    private final Map<String, Integer> mPlaylistOrder = new HashMap<>();
-    private final List<Video> mPendingStreams = new CopyOnWriteArrayList<>();
-    private final List<Video> mPinnedItems = new CopyOnWriteHashList<>();
+    private List<Video> mPinnedItems;
+    private List<Video> mPendingStreams;
     private boolean mIsFullscreenModeEnabled;
+    private Map<Integer, Video> mSelectedItems;
+    private boolean mIsFirstUseTooltipEnabled;
+    private boolean mIsDeviceSpecificBackupEnabled;
 
     private GeneralData(Context context) {
         mContext = context;
@@ -139,17 +141,16 @@ public class GeneralData implements ProfileChangeListener {
                 mIsSettingsSectionEnabled = true; // prevent Settings lock
             }
 
-            int index = getDefaultSectionIndex(sectionId);
-
             Video item = new Video();
             item.sectionId = sectionId;
 
             if (mPinnedItems.contains(item)) { // don't reorder if item already exists
-                persistState();
                 return;
             }
 
-            if (index == -1) {
+            int index = getDefaultSectionIndex(sectionId);
+
+            if (index == -1 || index > mPinnedItems.size()) {
                 mPinnedItems.add(item);
             } else {
                 mPinnedItems.add(index, item);
@@ -176,18 +177,6 @@ public class GeneralData implements ProfileChangeListener {
         return index;
     }
 
-    public Collection<Integer> getEnabledSections() {
-        List<Integer> enabledSections = new ArrayList<>();
-
-        for (Video item : mPinnedItems) {
-            if (item.sectionId != -1) {
-                enabledSections.add(item.sectionId);
-            }
-        }
-
-        return enabledSections;
-    }
-
     /**
      * Contains sections and pinned items!
      */
@@ -195,11 +184,6 @@ public class GeneralData implements ProfileChangeListener {
         Video section = Helpers.findFirst(mPinnedItems, item -> getSectionId(item) == sectionId);
         return section != null; // by default enable all pinned items
     }
-
-    //public void setSectionIndex(int sectionId, int index) {
-    //    // 1) distinguish section from pinned item
-    //    // 2) add pinned items after the sections
-    //}
 
     public int getSectionIndex(int sectionId) {
         // 1) Distinguish section from pinned item
@@ -251,7 +235,10 @@ public class GeneralData implements ProfileChangeListener {
         int index = findPinnedItemIndex(sectionId);
 
         if (index != -1) {
-            mPinnedItems.add(index + shift, mPinnedItems.get(index));
+            Video current = mPinnedItems.get(index);
+            mPinnedItems.remove(current);
+
+            mPinnedItems.add(index + shift, current);
             persistState();
         }
     }
@@ -308,13 +295,13 @@ public class GeneralData implements ProfileChangeListener {
         persistState();
     }
 
-    public void enableReturnToLauncher(boolean enable) {
-        mIsReturnToLauncherEnabled = enable;
+    public void enablePlayerOnlyMode(boolean enable) {
+        mIsPlayerOnlyModeEnabled = enable;
         persistState();
     }
 
-    public boolean isReturnToLauncherEnabled() {
-        return mIsReturnToLauncherEnabled;
+    public boolean isPlayerOnlyModeEnabled() {
+        return mIsPlayerOnlyModeEnabled;
     }
 
     public int getBackgroundPlaybackShortcut() {
@@ -348,12 +335,20 @@ public class GeneralData implements ProfileChangeListener {
 
     public void rememberSubscriptionsPosition(boolean remember) {
         mRememberSubscriptionsPosition = remember;
-        mSelectedSubscriptionsItem = null; // reset on change
         persistState();
     }
 
     public boolean isRememberSubscriptionsPositionEnabled() {
         return mRememberSubscriptionsPosition;
+    }
+
+    public void rememberPinnedPosition(boolean remember) {
+        mRememberPinnedPosition = remember;
+        persistState();
+    }
+
+    public boolean isRememberPinnedPositionEnabled() {
+        return mRememberPinnedPosition;
     }
 
     public void hideWatchedFromHome(boolean enable) {
@@ -379,6 +374,15 @@ public class GeneralData implements ProfileChangeListener {
 
     public boolean isHideWatchedFromNotificationsEnabled() {
         return mIsHideWatchedFromNotificationsEnabled;
+    }
+
+    public void hideWatchedFromWatchLater(boolean enable) {
+        mIsHideWatchedFromWatchLaterEnabled = enable;
+        persistState();
+    }
+
+    public boolean isHideWatchedFromWatchLaterEnabled() {
+        return mIsHideWatchedFromWatchLaterEnabled;
     }
 
     public boolean isHideStreamsFromSubscriptionsEnabled() {
@@ -886,13 +890,22 @@ public class GeneralData implements ProfileChangeListener {
         return mIsFullscreenModeEnabled;
     }
 
-    public void setSelectedSubscriptionsItem(Video item) {
-        mSelectedSubscriptionsItem = item;
+    public void setSelectedItem(int sectionId, Video item) {
+        if (item == null) {
+            return;
+        }
+
+        mSelectedItems.put(sectionId, item);
+
         persistState();
     }
 
-    public Video getSelectedSubscriptionsItem() {
-        return mSelectedSubscriptionsItem;
+    public Video getSelectedItem(int sectionId) {
+        return mSelectedItems.get(sectionId);
+    }
+
+    public void removeSelectedItem(int sectionId) {
+        mSelectedItems.remove(sectionId);
     }
 
     public void setChangelog(List<String> changelog) {
@@ -902,6 +915,24 @@ public class GeneralData implements ProfileChangeListener {
 
     public List<String> getChangelog() {
         return mChangelog;
+    }
+
+    public void enableFirstUseTooltip(boolean enable) {
+        mIsFirstUseTooltipEnabled = enable;
+        persistState();
+    }
+
+    public boolean isFirstUseTooltipEnabled() {
+        return mIsFirstUseTooltipEnabled;
+    }
+
+    public void enableDeviceSpecificBackup(boolean enable) {
+        mIsDeviceSpecificBackupEnabled = enable;
+        persistState();
+    }
+
+    public boolean isDeviceSpecificBackupEnabled() {
+        return mIsDeviceSpecificBackupEnabled;
     }
 
     private void initSections() {
@@ -922,6 +953,8 @@ public class GeneralData implements ProfileChangeListener {
     }
 
     private void cleanupPinnedItems() {
+        Helpers.removeDuplicates(mPinnedItems);
+
         Helpers.removeIf(mPinnedItems, value -> {
             if (value == null) {
                 return true;
@@ -932,18 +965,23 @@ public class GeneralData implements ProfileChangeListener {
         });
     }
 
-    private void restoreState() {
+    /**
+     * Fixed ConcurrentModificationException after onProfileChanged()<br/>
+     * Happened inside cleanupPinnedItems()
+     */
+    private synchronized void restoreState() {
         String data = mPrefs.getProfileData(GENERAL_DATA);
 
-        String[] split = Helpers.splitObject(data);
+        String[] split = Helpers.splitData(data);
 
         // Zero index is skipped. Selected sections were there.
         mBootSectionId = Helpers.parseInt(split, 1, MediaGroup.TYPE_HOME);
         mIsSettingsSectionEnabled = Helpers.parseBoolean(split, 2, true);
         mAppExitShortcut = Helpers.parseInt(split, 3, EXIT_DOUBLE_BACK);
-        mIsReturnToLauncherEnabled = Helpers.parseBoolean(split, 4, false);
+        mIsPlayerOnlyModeEnabled = Helpers.parseBoolean(split, 4, false);
         mBackgroundShortcut = Helpers.parseInt(split, 5, BACKGROUND_PLAYBACK_SHORTCUT_HOME_BACK);
-        String pinnedItems = Helpers.parseStr(split, 6);
+        //String pinnedItems = Helpers.parseStr(split, 6);
+        mPinnedItems = Helpers.parseList(split, 6, Video::fromString);
         mIsHideShortsFromSubscriptionsEnabled = Helpers.parseBoolean(split, 7, false);
         mIsRemapFastForwardToNextEnabled = Helpers.parseBoolean(split, 8, false);
         //mScreenDimmingTimeoutMs = Helpers.parseInt(split, 9, 1);
@@ -966,8 +1004,9 @@ public class GeneralData implements ProfileChangeListener {
         mIsScreensaverDisabled = Helpers.parseBoolean(split, 26, false);
         mIsVPNEnabled = Helpers.parseBoolean(split, 27, false);
         mLastPlaylistTitle = Helpers.parseStr(split, 28);
-        String playlistOrder = Helpers.parseStr(split, 29);
-        String pendingStreams = Helpers.parseStr(split, 30);
+        mPlaylistOrder = Helpers.parseMap(split, 29, Helpers::parseStr, Helpers::parseInt);
+        //String pendingStreams = Helpers.parseStr(split, 30);
+        mPendingStreams = Helpers.parseList(split, 30, Video::fromString);
         mIsGlobalClockEnabled = Helpers.parseBoolean(split, 31, true);
         mTimeFormat = Helpers.parseInt(split, 32, -1);
         mSettingsPassword = Helpers.parseStr(split, 33);
@@ -987,7 +1026,7 @@ public class GeneralData implements ProfileChangeListener {
         mIsRemapPlayToOKEnabled = Helpers.parseBoolean(split, 46, false);
         mHistoryState = Helpers.parseInt(split, 47, HISTORY_ENABLED);
         mRememberSubscriptionsPosition = Helpers.parseBoolean(split, 48, false);
-        mSelectedSubscriptionsItem = Video.fromString(Helpers.parseStr(split, 49));
+        // mSelectedSubscriptionsItem was here
         mIsRemapNumbersToSpeedEnabled = Helpers.parseBoolean(split, 50, false);
         mIsRemapDpadUpToSpeedEnabled = Helpers.parseBoolean(split, 51, false);
         mIsRemapChannelUpToVolumeEnabled = Helpers.parseBoolean(split, 52, false);
@@ -999,39 +1038,19 @@ public class GeneralData implements ProfileChangeListener {
         mPlayerExitShortcut = Helpers.parseInt(split, 58, EXIT_SINGLE_BACK);
         // StackOverflow on old devices?
         mIsOldChannelLookEnabled = Helpers.parseBoolean(split, 59, Build.VERSION.SDK_INT <= 19);
-        mIsFullscreenModeEnabled = Helpers.parseBoolean(split, 60, !Helpers.isTouchSupported(mContext));
+        mIsFullscreenModeEnabled = Helpers.parseBoolean(split, 60, true);
+        mIsHideWatchedFromWatchLaterEnabled = Helpers.parseBoolean(split, 61, false);
+        mRememberPinnedPosition = Helpers.parseBoolean(split, 62, false);
+        mSelectedItems = Helpers.parseMap(split, 63, Helpers::parseInt, Video::fromString);
+        mIsFirstUseTooltipEnabled = Helpers.parseBoolean(split, 64, true);
+        mIsDeviceSpecificBackupEnabled = Helpers.parseBoolean(split, 65, false);
 
-        if (pinnedItems != null && !pinnedItems.isEmpty()) {
-            String[] pinnedItemsArr = Helpers.splitArray(pinnedItems);
-
-            for (String pinnedItem : pinnedItemsArr) {
-                mPinnedItems.add(Video.fromString(pinnedItem));
-            }
-        } else {
+        if (mPinnedItems.isEmpty()) {
             initPinnedItems();
-        }
-
-        if (playlistOrder != null && !playlistOrder.isEmpty()) {
-            mPlaylistOrder.clear();
-            String[] playlistOrderArr = Helpers.splitArray(playlistOrder);
-
-            for (String playlistOrderItem : playlistOrderArr) {
-                String[] keyValPair = playlistOrderItem.split("\\|");
-                mPlaylistOrder.put(keyValPair[0], Integer.parseInt(keyValPair[1]));
-            }
-        }
-
-        if (pendingStreams != null && !pendingStreams.isEmpty()) {
-            String[] pendingStreamsArr = Helpers.splitArray(pendingStreams);
-            for (String pendingStream : pendingStreamsArr) {
-                mPendingStreams.add(Video.fromString(pendingStream));
-            }
         }
 
         // Backward compatibility
-        if (!isSectionPinned(MediaGroup.TYPE_SETTINGS)) {
-            initPinnedItems();
-        }
+        enableSection(MediaGroup.TYPE_SETTINGS, true);
 
         cleanupPinnedItems();
     }
@@ -1043,27 +1062,21 @@ public class GeneralData implements ProfileChangeListener {
     }
 
     private void persistState() {
-        List<String> playlistOrderPairs = new ArrayList<>();
-        for (Entry<String, Integer> pair : mPlaylistOrder.entrySet()) {
-            playlistOrderPairs.add(String.format("%s|%s", pair.getKey(), pair.getValue()));
-        }
-        String playlistOrder = Helpers.mergeList(playlistOrderPairs);
         // Zero index is skipped. Selected sections were there.
-        mPrefs.setProfileData(GENERAL_DATA, Helpers.mergeObject(null, mBootSectionId, mIsSettingsSectionEnabled, mAppExitShortcut,
-                mIsReturnToLauncherEnabled, mBackgroundShortcut, Helpers.mergeList(mPinnedItems), mIsHideShortsFromSubscriptionsEnabled,
-                mIsRemapFastForwardToNextEnabled, null,
-                mIsProxyEnabled, mIsBridgeCheckEnabled, mIsOkButtonLongPressDisabled, mLastPlaylistId,
+        mPrefs.setProfileData(GENERAL_DATA, Helpers.mergeData(null, mBootSectionId, mIsSettingsSectionEnabled, mAppExitShortcut,
+                mIsPlayerOnlyModeEnabled, mBackgroundShortcut, mPinnedItems, mIsHideShortsFromSubscriptionsEnabled,
+                mIsRemapFastForwardToNextEnabled, null, mIsProxyEnabled, mIsBridgeCheckEnabled, mIsOkButtonLongPressDisabled, mLastPlaylistId,
                 null, mIsHideUpcomingEnabled, mIsRemapPageUpToNextEnabled, mIsRemapPageUpToLikeEnabled,
                 mIsRemapChannelUpToNextEnabled, mIsRemapChannelUpToLikeEnabled, mIsRemapPageUpToSpeedEnabled,
                 mIsRemapChannelUpToSpeedEnabled, mIsRemapFastForwardToSpeedEnabled, mIsRemapChannelUpToSearchEnabled,
                 mIsHideShortsFromHomeEnabled, mIsHideShortsFromHistoryEnabled, mIsScreensaverDisabled, mIsVPNEnabled, mLastPlaylistTitle,
-                playlistOrder, Helpers.mergeList(mPendingStreams), mIsGlobalClockEnabled, mTimeFormat, mSettingsPassword, mIsChildModeEnabled, mIsHistoryEnabled,
+                mPlaylistOrder, mPendingStreams, mIsGlobalClockEnabled, mTimeFormat, mSettingsPassword, mIsChildModeEnabled, mIsHistoryEnabled,
                 mScreensaverTimeoutMs, null, mIsAltAppIconEnabled, mVersionCode, mIsSelectChannelSectionEnabled, mMasterPassword,
-                mIsOldHomeLookEnabled, mIsOldUpdateNotificationsEnabled, mScreensaverDimmingPercents, mIsRemapNextToSpeedEnabled, mIsRemapPlayToOKEnabled, mHistoryState,
-                mRememberSubscriptionsPosition, Helpers.toString(mSelectedSubscriptionsItem),
-                mIsRemapNumbersToSpeedEnabled, mIsRemapDpadUpToSpeedEnabled, mIsRemapChannelUpToVolumeEnabled, mIsRemapDpadUpToVolumeEnabled,
-                mIsRemapDpadLeftToVolumeEnabled, mIsRemapNextToFastForwardEnabled, mIsHideWatchedFromNotificationsEnabled, Helpers.mergeList(mChangelog), mPlayerExitShortcut,
-                mIsOldChannelLookEnabled, mIsFullscreenModeEnabled));
+                mIsOldHomeLookEnabled, mIsOldUpdateNotificationsEnabled, mScreensaverDimmingPercents, mIsRemapNextToSpeedEnabled, mIsRemapPlayToOKEnabled,
+                mHistoryState, mRememberSubscriptionsPosition, null, mIsRemapNumbersToSpeedEnabled, mIsRemapDpadUpToSpeedEnabled, mIsRemapChannelUpToVolumeEnabled,
+                mIsRemapDpadUpToVolumeEnabled, mIsRemapDpadLeftToVolumeEnabled, mIsRemapNextToFastForwardEnabled, mIsHideWatchedFromNotificationsEnabled,
+                mChangelog, mPlayerExitShortcut, mIsOldChannelLookEnabled, mIsFullscreenModeEnabled, mIsHideWatchedFromWatchLaterEnabled,
+                mRememberPinnedPosition, mSelectedItems, mIsFirstUseTooltipEnabled, mIsDeviceSpecificBackupEnabled));
     }
 
     private int getSectionId(Video item) {
@@ -1076,11 +1089,6 @@ public class GeneralData implements ProfileChangeListener {
 
     @Override
     public void onProfileChanged() {
-        // reset on profile change
-        mPinnedItems.clear();
-        mPendingStreams.clear();
-        mPlaylistOrder.clear();
-
         restoreState();
     }
 }

@@ -261,8 +261,8 @@
     <string name="enable_voice_search">Genel aramayı etkinleştir (aygıt yazılımı desteği gerekli)</string>
     <string name="subscribe_unsubscribe_from_channel">Kanala Abone ol/Aboneliği iptal et</string>
     <string name="app_backup_restore">Yedekle/Geri al</string>
-    <string name="app_backup">Veriyi yedekle</string>
-    <string name="app_restore">Veriyi yedekten geri yükle</string>
+    <string name="app_backup">Uygulama verilerini yedekle</string>
+    <string name="app_restore">Uygulama verilerini geri yükle</string>
     <string name="skip_each_segment_once">Bölümleri tekrar atlama</string>
     <string name="disable_ok_long_press">TAMAM düğmesine uzun basmayı devre dışı bırak</string>
     <string name="disable_ok_long_press_desc">TAMAM düğmesinin düzgün çalışmadığı hatalı denetleyiciler için tasarlanmıştır</string>
@@ -338,7 +338,7 @@
     <string name="hide_upcoming">Yaklaşan yayınları Abonelikler\'de gizle</string>
     <string name="hide_upcoming_channel">Yaklaşan yayınları Kanalda gizle</string>
     <string name="hide_upcoming_home">Yaklaşan yayınları Ana Sayfa\'da gizle</string>
-    <string name="search_background_playback">Arama yaparken/Kanalı açarken resim içinde resim moduna geç</string>
+    <string name="search_background_playback">Arama yaparken/Kanalda gezinirken arka planda oynat</string>
     <string name="trending_row_name">Trendler</string>
     <string name="player_seek_type">Arama davranışı</string>
     <string name="player_seek_regular">Normal</string>
@@ -475,6 +475,7 @@
     <string name="action_subscribe_on">Abone ol Açık</string>
     <!-- END Moved strings -->
     <string name="skip_24_rate">24 fps biçimlerini atla (gerçek sinema modu düzeltmesi\?)</string>
+    <string name="skip_shorts">Shortsları atla</string>
     <string name="player_disable_suggestions">Önerileri devre dışı bırak</string>
     <string name="feedback">Geri bildirim</string>
     <string name="sources">Kaynaklar</string>
@@ -507,8 +508,8 @@
     <string name="thumb_quality_start">Videonun başlangıcından</string>
     <string name="thumb_quality_middle">Videonun ortasından</string>
     <string name="thumb_quality_end">Videonun sonundan</string>
-    <string name="content_block_status">SponsorBlock durumunu kontrol et</string>
-    <string name="dearrow_status">DeArrow durumunu kontrol et</string>
+    <string name="content_block_status">SponsorBlock sunucu durumunu kontrol et</string>
+    <string name="dearrow_status">DeArrow sunucu durumunu kontrol et</string>
     <string name="player_show_quality_info_bitrate">Kalite bilgisine bit hızı ekle</string>
     <string name="player_speed_button_old_behavior">Hız düğmesinin eski davranışına geri dön</string>
     <string name="protect_settings_with_password">Tüm ayarları şifre ile koru</string>
@@ -553,6 +554,7 @@
     <string name="clear_search_history">Arama geçmişini temizle</string>
     <string name="remove_from_subscriptions">Gizle</string>
     <string name="player_long_speed_list">Uzun oynatma hızı listesi</string>
+    <string name="player_extra_long_speed_list">Ekstra uzun oynatma hızı listesi</string>
     <string name="alt_app_icon">Alternatif uygulama simgesi (yeniden başlatma gerekli)</string>
     <string name="network_stack">%s ağ yığınını tercih et</string>
     <string name="player_network_stack">Ağ yığını</string>
@@ -589,7 +591,7 @@
     <string name="sorting_default">Varsayılan (hızlı, hareketli ön izlemeler)</string>
     <string name="content_block_exclude_channel">Bu kanalı SponsorBlock\'tan hariç tut</string>
     <string name="content_block_stop_excluding_channel">Bu kanalı SponsorBlock\'tan hariç tutmayı durdur</string>
-    <string name="player_chapter_notification">Bölümler arasında hızla ilerlemek için bildirim göster</string>
+    <string name="player_chapter_notification">Açılır bildirimi kullanarak bölümler arasında hızlı ilerle</string>
     <string name="subtitle_remember">Her kanal için etkinleştirilmiş altyazıları hatırla</string>
     <string name="amazon_frame_drop_fix">Kare bırakma düzeltmesi #2</string>
     <string name="amazon_frame_drop_fix_desc">Amazon Stick cihazları için tasarlanmıştır. Diğer cihazlarda da çalışabilir.</string>
@@ -605,6 +607,7 @@
     <string name="player_global_focus">Oynatıcı düğmesi satırları arasında kusursuz gezinme</string>
     <string name="auto_history">Otomatik (hesap ayarlarını kullan)</string>
     <string name="remember_position_subscriptions">Abonelikler\'de son görüntülenen konumu hatırla</string>
+    <string name="remember_position_pinned">Sabitlenmiş oynatma listelerinde son görüntülenen konumu hatırla</string>
     <string name="msg_player_unknown_error">Bilinmeyen hata</string>
     <string name="header_notifications">Bildirimler</string>
     <string name="disable_search_history">Arama geçmişini devre dışı bırak</string>
@@ -624,6 +627,7 @@
     <string name="hide_watched_from_notifications">İzlenen videoları Bildirimler\'de gizle</string>
     <string name="hide_unwanted_content">İstenmeyen içerik gizleme</string>
     <string name="hide_watched_from_home">İzlenen videoları Ana Sayfa\'da gizle</string>
+    <string name="hide_watched_from_watch_later">İzlenen videoları Daha sonra izle oynatma listesinde gizle</string>
     <string name="remote_control_permission">Arka plan Uzaktan kontrol, Yer Paylaşımı izni gerektirir</string>
     <string name="login_from_browser">Tarayıcıdan giriş yap</string>
     <string name="disable_remote_history">Uzaktan kontrol kullanırken geçmişi devre dışı bırak</string>
@@ -633,7 +637,7 @@
     <string name="channel_filter_hint">Kanalları filtrele</string>
     <string name="player_loop_shorts">Shortsları tekrarla</string>
     <string name="player_quick_shorts_skip">Shortsları sol/sağ düğmeyle atla</string>
-    <string name="channels_filter">Kanallar bölümünde kanal listesi filtreleme</string>
+    <string name="channels_filter">Kanallar bölümü içindeki Kanalları filtrele alanını göster</string>
     <string name="channel_search_bar">Kanal sayfasında arama çubuğu</string>
     <string name="header_sports">Spor</string>
     <string name="keep_finished_activities">Bitmiş etkinlikleri sakla</string>
@@ -648,4 +652,12 @@
     <string name="crowdsoursed_titles">Kitle kaynaklı başlıklar</string>
     <string name="dearrow_not_submitted_thumbs">Gönderilmeyen küçük resimler nereden alınsın\?</string>
     <string name="pitch_effect">Pitch efekti</string>
+    <string name="fullscreen_mode">Tam ekran modu (sistem çubukları olmadan)</string>
+    <string name="player_only_mode">Video uygulama dışında açılırsa yalnızca oynatıcıyı göster</string>
+    <string name="pinned_channel_rows">Sabitlenmiş kanalı satır olarak göster</string>
+    <string name="prefer_ipv4">IPv4 DNS tercih et</string>
+    <string name="prefer_ipv4_desc">Uygulamanın hiç çalışmadığı durumları düzeltebilir.\nNot: Takılmalara ve çökmelere neden olabilir (özellikle Android 8 cihazlarda ya da Dune HD\'de)</string>
+    <string name="long_press_for_settings">AYARLAR İÇİN UZUN BASIN</string>
+    <string name="device_specific_backup">Yalnızca bu cihaz için yedekleme</string>
+    <string name="local_backup">Yerel yedekleme</string>
 </resources>

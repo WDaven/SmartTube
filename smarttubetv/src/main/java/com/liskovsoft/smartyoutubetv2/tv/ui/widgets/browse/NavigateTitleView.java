@@ -20,7 +20,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.liskovsoft.mediaserviceinterfaces.data.Account;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.Account;
 import com.liskovsoft.sharedutils.locale.LocaleUtility;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.PlaybackPresenter;
@@ -303,7 +303,8 @@ public class NavigateTitleView extends TitleView implements OnDataChange, Accoun
 
         if (current != null && current.getAvatarImageUrl() != null) {
             loadIcon(mAccountView, current.getAvatarImageUrl());
-            TooltipCompatHandler.setTooltipText(mAccountView, current.getName() != null ? current.getName() : current.getEmail());
+            String accountName = current.getName() != null ? current.getName() : current.getEmail();
+            TooltipCompatHandler.setTooltipText(mAccountView, Utils.updateTooltip(getContext(), accountName));
         } else {
             Colors orbColors = mAccountView.getOrbColors();
             mAccountView.setOrbColors(new Colors(orbColors.color, orbColors.brightColor, ContextCompat.getColor(getContext(), R.color.orb_icon_color)));

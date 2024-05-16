@@ -1,13 +1,12 @@
 package com.liskovsoft.smartyoutubetv2.common.app.models.playback.controllers;
 
-import com.liskovsoft.mediaserviceinterfaces.data.MediaItemMetadata;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaItemMetadata;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.smartyoutubetv2.common.R;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Playlist;
 import com.liskovsoft.smartyoutubetv2.common.app.models.data.Video;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.PlayerEventListenerHelper;
-import com.liskovsoft.smartyoutubetv2.common.app.models.playback.controllers.SuggestionsController.MetadataListener;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService.State;
 import com.liskovsoft.smartyoutubetv2.common.app.presenters.AppDialogPresenter;
@@ -22,7 +21,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.RemoteControlData;
 import com.liskovsoft.smartyoutubetv2.common.utils.AppDialogUtil;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 
-public class VideoStateController extends PlayerEventListenerHelper implements MetadataListener {
+public class VideoStateController extends PlayerEventListenerHelper {
     private static final String TAG = VideoStateController.class.getSimpleName();
     private static final long MUSIC_VIDEO_MAX_DURATION_MS = 6 * 60 * 1000;
     private static final long LIVE_THRESHOLD_MS = 90_000; // should be greater than the live buffer
@@ -350,7 +349,7 @@ public class VideoStateController extends PlayerEventListenerHelper implements M
     }
 
     private void resetPosition(Video video) {
-        video.percentWatched = 0;
+        video.markNotViewed();
         resetPosition(video.videoId);
     }
 
@@ -412,7 +411,8 @@ public class VideoStateController extends PlayerEventListenerHelper implements M
     private void saveState() {
         savePosition();
         updateHistory();
-        //persistState();
+        //persistState(); // persist the state if the device reboots accidentally
+        hideWatchedContent();
     }
 
     private void savePosition() {
@@ -438,7 +438,7 @@ public class VideoStateController extends PlayerEventListenerHelper implements M
         } else { // fully viewed
             // Mark video as fully viewed. This could help to restore proper progress marker on the video card later.
             mStateService.save(new State(video.videoId, durationMs, durationMs, getPlayer().getSpeed()));
-            video.percentWatched = 100;
+            video.markFullyViewed();
         }
 
         Playlist.instance().sync(video);
@@ -613,5 +613,21 @@ public class VideoStateController extends PlayerEventListenerHelper implements M
         float posPercents2 = item.getPositionMs() * 100f / item.getDurationMs();
 
         return (posPercents2 != 0 && Math.abs(posPercents1 - posPercents2) > 3) && state.timestamp < item.timestamp;
+    }
+
+    private void hideWatchedContent() {
+        Video video = getVideo();
+
+        if (video == null) {
+            return;
+        }
+
+        if (mGeneralData.isHideWatchedFromWatchLaterEnabled() && video.percentWatched > 95) {
+            AppDialogUtil.removeFromWatchLaterPlaylist(getContext(), video);
+        }
+
+        if (mGeneralData.isHideWatchedFromNotificationsEnabled()) {
+            MediaServiceManager.instance().hideNotification(video);
+        }
     }
 }

@@ -66,13 +66,14 @@ public class MainUIData extends DataChangeBase {
             MENU_ITEM_ADD_TO_PLAYLIST | MENU_ITEM_CREATE_PLAYLIST | MENU_ITEM_RENAME_PLAYLIST | MENU_ITEM_ADD_TO_NEW_PLAYLIST |
             MENU_ITEM_STREAM_REMINDER | MENU_ITEM_PLAYLIST_ORDER | MENU_ITEM_OPEN_CHANNEL | MENU_ITEM_REMOVE_FROM_SUBSCRIPTIONS |
             MENU_ITEM_PLAY_NEXT | MENU_ITEM_OPEN_PLAYLIST | MENU_ITEM_SUBSCRIBE;
-    private static final Long[] MENU_ITEM_DEFAULT_ORDER = { MENU_ITEM_PLAY_VIDEO, MENU_ITEM_PLAY_VIDEO_INCOGNITO, MENU_ITEM_REMOVE_FROM_HISTORY,
+    private static final Long[] MENU_ITEM_DEFAULT_ORDER = {
+            MENU_ITEM_EXIT_FROM_PIP, MENU_ITEM_PLAY_VIDEO, MENU_ITEM_PLAY_VIDEO_INCOGNITO, MENU_ITEM_REMOVE_FROM_HISTORY,
             MENU_ITEM_STREAM_REMINDER, MENU_ITEM_RECENT_PLAYLIST, MENU_ITEM_ADD_TO_PLAYLIST, MENU_ITEM_CREATE_PLAYLIST, MENU_ITEM_RENAME_PLAYLIST,
             MENU_ITEM_ADD_TO_NEW_PLAYLIST, MENU_ITEM_NOT_INTERESTED, MENU_ITEM_REMOVE_FROM_SUBSCRIPTIONS, MENU_ITEM_MARK_AS_WATCHED,
             MENU_ITEM_PLAYLIST_ORDER, MENU_ITEM_PLAY_NEXT, MENU_ITEM_ADD_TO_QUEUE, MENU_ITEM_SHOW_QUEUE, MENU_ITEM_OPEN_CHANNEL, MENU_ITEM_OPEN_PLAYLIST,
             MENU_ITEM_SUBSCRIBE, MENU_ITEM_EXCLUDE_FROM_CONTENT_BLOCK, MENU_ITEM_PIN_TO_SIDEBAR, MENU_ITEM_SAVE_REMOVE_PLAYLIST, MENU_ITEM_OPEN_DESCRIPTION,
             MENU_ITEM_OPEN_COMMENTS, MENU_ITEM_SHARE_LINK, MENU_ITEM_SHARE_EMBED_LINK, MENU_ITEM_SHARE_QR_LINK, MENU_ITEM_SELECT_ACCOUNT,
-            MENU_ITEM_TOGGLE_HISTORY, MENU_ITEM_CLEAR_HISTORY
+            MENU_ITEM_TOGGLE_HISTORY, MENU_ITEM_CLEAR_HISTORY, MENU_ITEM_MOVE_SECTION_UP, MENU_ITEM_MOVE_SECTION_DOWN, MENU_ITEM_UPDATE_CHECK
     };
     @SuppressLint("StaticFieldLeak")
     private static MainUIData sInstance;
@@ -98,6 +99,7 @@ public class MainUIData extends DataChangeBase {
     private List<Long> mMenuItemsOrdered;
     private boolean mIsChannelsFilterEnabled;
     private boolean mIsChannelSearchBarEnabled;
+    private boolean mIsPinnedChannelRowsEnabled;
 
     private MainUIData(Context context) {
         mContext = context;
@@ -238,6 +240,15 @@ public class MainUIData extends DataChangeBase {
         return mIsChannelsFilterEnabled;
     }
 
+    public void enablePinnedChannelRows(boolean enable) {
+        mIsPinnedChannelRowsEnabled = enable;
+        persistState();
+    }
+
+    public boolean isPinnedChannelRowsEnabled() {
+        return mIsPinnedChannelRowsEnabled;
+    }
+
     public void enableChannelSearchBar(boolean enable) {
         mIsChannelSearchBarEnabled = enable;
         persistState();
@@ -367,7 +378,7 @@ public class MainUIData extends DataChangeBase {
     private void restoreState() {
         String data = mPrefs.getData(MAIN_UI_DATA);
 
-        String[] split = Helpers.splitObject(data);
+        String[] split = Helpers.splitData(data);
 
         mIsCardAnimatedPreviewsEnabled = Helpers.parseBoolean(split, 0, true);
         mVideoGridScale = Helpers.parseFloat(split, 1, 1.0f); // 4 cards in a row
@@ -389,6 +400,7 @@ public class MainUIData extends DataChangeBase {
         mMenuItemsOrdered = Helpers.parseLongList(split, 17);
         mIsChannelsFilterEnabled = Helpers.parseBoolean(split, 18, true);
         mIsChannelSearchBarEnabled = Helpers.parseBoolean(split, 19, true);
+        mIsPinnedChannelRowsEnabled = Helpers.parseBoolean(split, 20, true);
 
         for (Long menuItem : MENU_ITEM_DEFAULT_ORDER) {
             if (!mMenuItemsOrdered.contains(menuItem)) {
@@ -402,12 +414,12 @@ public class MainUIData extends DataChangeBase {
 
     @Override
     protected void persistState() {
-        mPrefs.setData(MAIN_UI_DATA, Helpers.mergeObject(mIsCardAnimatedPreviewsEnabled,
+        mPrefs.setData(MAIN_UI_DATA, Helpers.mergeData(mIsCardAnimatedPreviewsEnabled,
                 mVideoGridScale, mUIScale, mColorSchemeIndex, mIsCardMultilineTitleEnabled,
                 mChannelCategorySorting, mPlaylistsStyle, mCardTitleLinesNum, mIsCardTextAutoScrollEnabled,
                 mIsUploadsOldLookEnabled, mIsUploadsAutoLoadEnabled, mCardTextScrollSpeed, mMenuItems, mTopButtons,
                 null, mThumbQuality, mIsCardMultilineSubtitleEnabled, Helpers.mergeList(mMenuItemsOrdered),
-                mIsChannelsFilterEnabled, mIsChannelSearchBarEnabled));
+                mIsChannelsFilterEnabled, mIsChannelSearchBarEnabled, mIsPinnedChannelRowsEnabled));
 
         super.persistState();
     }

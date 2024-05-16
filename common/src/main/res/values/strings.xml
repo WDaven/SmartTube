@@ -261,8 +261,8 @@
     <string name="enable_voice_search">Enable global search (firmware support needed)</string>
     <string name="subscribe_unsubscribe_from_channel">Subscribe/Unsubscribe from the channel</string>
     <string name="app_backup_restore">Backup/Restore</string>
-    <string name="app_backup">Backup data</string>
-    <string name="app_restore">Restore data from backup</string>
+    <string name="app_backup">Backup app data</string>
+    <string name="app_restore">Restore app data</string>
     <string name="skip_each_segment_once">Don\'t skip segments again</string>
     <string name="disable_ok_long_press">Disable OK button long press</string>
     <string name="disable_ok_long_press_desc">Intended for buggy controllers where OK button is not function properly</string>
@@ -338,7 +338,7 @@
     <string name="hide_upcoming">Hide upcoming from Subscriptions</string>
     <string name="hide_upcoming_channel">Hide upcoming from Channel</string>
     <string name="hide_upcoming_home">Hide upcoming from Home</string>
-    <string name="search_background_playback">Enter PIP on search/open channel</string>
+    <string name="search_background_playback">Background play while searching/browsing a channel</string>
     <string name="trending_row_name">Trending</string>
     <string name="player_seek_type">Seek behavior</string>
     <string name="player_seek_regular">Regular</string>
@@ -475,6 +475,7 @@
     <string name="action_subscribe_on">Subscribe On</string>
     <!-- END Moved strings -->
     <string name="skip_24_rate">Skip 24fps formats (real cinema mode fix?)</string>
+    <string name="skip_shorts">Skip Shorts</string>
     <string name="player_disable_suggestions">Disable suggestions</string>
     <string name="feedback">Feedback</string>
     <string name="sources">Sources</string>
@@ -507,8 +508,8 @@
     <string name="thumb_quality_start">Start of the video</string>
     <string name="thumb_quality_middle">Middle of the video</string>
     <string name="thumb_quality_end">End of the video</string>
-    <string name="content_block_status">Check SponsorBlock status</string>
-    <string name="dearrow_status">Check DeArrow status</string>
+    <string name="content_block_status">Check SponsorBlock server status</string>
+    <string name="dearrow_status">Check DeArrow server status</string>
     <string name="player_show_quality_info_bitrate">Add bitrate into the quality info</string>
     <string name="player_speed_button_old_behavior">Revert old behavior of the speed button</string>
     <string name="protect_settings_with_password">Protect all settings with password</string>
@@ -552,7 +553,8 @@
     <string name="sort_by_rating">Rating</string>
     <string name="clear_search_history">Clear search history</string>
     <string name="remove_from_subscriptions">Hide</string>
-    <string name="player_long_speed_list">More speeds in the speed list</string>
+    <string name="player_long_speed_list">Long speed list</string>
+    <string name="player_extra_long_speed_list">Extra long speed list</string>
     <string name="alt_app_icon">Alternative app icon (needs reboot)</string>
     <string name="network_stack">Prefer %s network stack</string>
     <string name="player_network_stack">Network stack</string>
@@ -589,7 +591,7 @@
     <string name="sorting_default">Default (fast, animated previews)</string>
     <string name="content_block_exclude_channel">Exclude this channel from SponsorBlock</string>
     <string name="content_block_stop_excluding_channel">Stop excluding this channel from SponsorBlock</string>
-    <string name="player_chapter_notification">Show notification to quickly advance through the chapters</string>
+    <string name="player_chapter_notification">Quick advance through the chapters using the popup notification</string>
     <string name="subtitle_remember">Remember enabled subtitles per each channel</string>
     <string name="amazon_frame_drop_fix">Frame drop fix #2</string>
     <string name="amazon_frame_drop_fix_desc">Intended for Amazon Stick devices. May work on other devices too.</string>
@@ -605,6 +607,7 @@
     <string name="player_global_focus">Seamless navigation between player button rows</string>
     <string name="auto_history">Auto (use account settings)</string>
     <string name="remember_position_subscriptions">Remember last viewed position in Subscriptions</string>
+    <string name="remember_position_pinned">Remember last viewed position in the pinned playlists</string>
     <string name="msg_player_unknown_error">Unknown error</string>
     <string name="header_notifications">Notifications</string>
     <string name="disable_search_history">Disable search history</string>
@@ -624,6 +627,7 @@
     <string name="hide_watched_from_notifications">Hide watched videos from Notifications</string>
     <string name="hide_unwanted_content">Hide unwanted content</string>
     <string name="hide_watched_from_home">Hide watched videos from Home</string>
+    <string name="hide_watched_from_watch_later">Hide watched videos from Watch later playlist</string>
     <string name="remote_control_permission">Background Remote control requires Overlay permission</string>
     <string name="login_from_browser">Login from browser</string>
     <string name="disable_remote_history">Disable history when using remote control</string>
@@ -633,7 +637,7 @@
     <string name="channel_filter_hint">Filter channels</string>
     <string name="player_loop_shorts">Loop Shorts</string>
     <string name="player_quick_shorts_skip">Skip Shorts with left/right buttons</string>
-    <string name="channels_filter">Filter channels list inside the Channels section</string>
+    <string name="channels_filter">Show Filter channels field inside Channels section</string>
     <string name="channel_search_bar">Search bar inside the Channel page</string>
     <string name="header_sports">Sports</string>
     <string name="keep_finished_activities">Keep finished activities</string>
@@ -649,4 +653,11 @@
     <string name="dearrow_not_submitted_thumbs">Where to grab not submitted thumbnails</string>
     <string name="pitch_effect">Pitch effect</string>
     <string name="fullscreen_mode">Fullscreen mode (without system bars)</string>
+    <string name="player_only_mode">Show only the player if the video is opened outside of the app</string>
+    <string name="pinned_channel_rows">Display pinned channel as rows</string>
+    <string name="prefer_ipv4">Prefer IPv4 DNS</string>
+    <string name="prefer_ipv4_desc">Could fix situations when the app isn\'t working at all.\nNote. May cause hangs and crashes (especially on Android 8 devices or Dune HD)</string>
+    <string name="long_press_for_settings">LONG PRESS FOR SETTINGS</string>
+    <string name="device_specific_backup">Backup for this device only</string>
+    <string name="local_backup">Local backup</string>
 </resources>

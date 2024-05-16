@@ -1,8 +1,8 @@
 package com.liskovsoft.smartyoutubetv2.common.app.models.data;
 
-import com.liskovsoft.mediaserviceinterfaces.data.ChapterItem;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaItem;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.ChapterItem;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaGroup;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaItem;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.service.VideoStateService;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class VideoGroup {
     /**
-     * Add at the end of the the existing group
+     * Add at the end of the existing group
      */
     public static final int ACTION_APPEND = 0;
     /**

@@ -475,6 +475,7 @@
     <string name="action_subscribe_on">Odebírat</string>
     <!-- KONEC Přesunutých řetězců -->
     <string name="skip_24_rate">Přeskakovat formáty s 24fps (oprava pro režim Real Cinema?)</string>
+    <string name="skip_shorts">Přeskočit Shorts</string>
     <string name="player_disable_suggestions">Zakázat návrhy</string>
     <string name="feedback">Zpětná vazba</string>
     <string name="sources">Zdroje</string>
@@ -507,8 +508,8 @@
     <string name="thumb_quality_start">Na začátku videa</string>
     <string name="thumb_quality_middle">Uprostřed videa</string>
     <string name="thumb_quality_end">Na konci videa</string>
-    <string name="content_block_status">Zkontrolovat stav SponsorBlocku</string>
-    <string name="dearrow_status">Zkontrolovat stav DeArrow</string>
+    <string name="content_block_status">Zkontrolovat stav SponsorBlock serveru</string>
+    <string name="dearrow_status">Zkontrolovat stav DeArrow serveru</string>
     <string name="player_show_quality_info_bitrate">Přidej bitrate do informací o kvalitě</string>
     <string name="player_speed_button_old_behavior">Vrátit původní chování tlačítka rychlosti</string>
     <string name="protect_settings_with_password">Chránit všechna nastavení heslem</string>
@@ -552,7 +553,8 @@
     <string name="sort_by_rating">Hodnocení</string>
     <string name="clear_search_history">Vymazat historii vyhledávání</string>
     <string name="remove_from_subscriptions">Skrýt</string>
-    <string name="player_long_speed_list">Více možností rychlosti videa</string>
+    <string name="player_long_speed_list">Dlouhý seznam rychlostí</string>
+    <string name="player_extra_long_speed_list">Velmi dlouhý seznam rychlostí</string>
     <string name="alt_app_icon">Alternativní ikona aplikace (vyžaduje restart)</string>
     <string name="network_stack">Preferovat síťový zásobník %s</string>
     <string name="player_network_stack">Síťový zásobník</string>
@@ -605,6 +607,7 @@
     <string name="player_global_focus">Souvislá navigace mezi řadami tlačítek přehrávače</string>
     <string name="auto_history">Automaticky (použije nastavení účtu)</string>
     <string name="remember_position_subscriptions">Pamatovat si poslední zhlédnutou pozici v Odběrech</string>
+    <string name="remember_position_pinned">Pamatovat si poslední zhlédnutou pozici v připnutých playlistech</string>
     <string name="msg_player_unknown_error">Neznámá chyba</string>
     <string name="header_notifications">Oznámení</string>
     <string name="disable_search_history">Zakázat historii vyhledávání</string>
@@ -624,6 +627,7 @@
     <string name="hide_watched_from_notifications">Skrýt zhlédnutá videa v Oznámení</string>
     <string name="hide_unwanted_content">Skrýt nežádoucí obsah</string>
     <string name="hide_watched_from_home">Skrýt zhlédnutá videa ze sekce Domů</string>
+    <string name="hide_watched_from_watch_later">Skrýt zhlédnutá videa ze seznamu Přehrát později</string>
     <string name="remote_control_permission">Dálkové ovládání na pozadí vyžaduje oprávnění pro překrytí přes okna</string>
     <string name="login_from_browser">Přihlášení přes prohlížeč</string>
     <string name="disable_remote_history">Zazázat historii při používání dálkového ovládání</string>
@@ -633,7 +637,7 @@
     <string name="channel_filter_hint">Filtrovat kanály</string>
     <string name="player_loop_shorts">Opakovat Shorts</string>
     <string name="player_quick_shorts_skip">Přeskakovat Shorts tlačítky vlevo/vpravo</string>
-    <string name="channels_filter">Filtrovat seznam kanálů v sekci Kanály</string>
+    <string name="channels_filter">Zobrazit vyhledávací pole v sekci Kanály</string>
     <string name="channel_search_bar">Vyhledávací panel na stránce kanálu</string>
     <string name="header_sports">Sporty</string>
     <string name="keep_finished_activities">Udržovat dokončené aktivity</string>
@@ -649,4 +653,9 @@
     <string name="dearrow_not_submitted_thumbs">Odkud vzít nepřidané náhledy</string>
     <string name="pitch_effect">Efekt výšky tónu</string>
     <string name="fullscreen_mode">Režim celé obrazovky (bez systémových lišt)</string>
+    <string name="player_only_mode">Zobrazit pouze přehrávač, pokud je video otevřeno mimo aplikaci</string>
+    <string name="pinned_channel_rows">Zobrazit připnutý kanál jako řádky</string>
+    <string name="prefer_ipv4">Preferovat IPv4 DNS</string>
+    <string name="prefer_ipv4_desc">Může vyřešit situace, kdy aplikace vůbec nefunguje\nPozn. Může způsobit zamrznutí a pády (především na zařízeních s Android 8 nebo Dune HD)</string>
+    <string name="long_press_for_settings">DLOUZE STISKNĚTE PRO NASTAVENÍ</string>
 </resources>

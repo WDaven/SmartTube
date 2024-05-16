@@ -136,6 +136,7 @@
     <string name="player_show_ending_time">İdarəetmə panelində bitmə vaxtını göstərin</string>
     <string name="open_channel_uploads">Kanal yükləmələrini açın</string>
     <string name="app_exit_shortcut">Proqramdan çıxın</string>
+    <string name="player_exit_shortcut">Pleyerdən çıx</string>
     <string name="app_exit_none">Çıxma</string>
     <string name="app_double_back_exit">İkiqat arxa</string>
     <string name="app_single_back_exit">Tək arxa</string>
@@ -230,6 +231,8 @@
     <string name="pin_unpin_from_sidebar">Yan paneldən Əlavə et/Çıxar</string>
     <string name="pin_unpin_playlist">Yan paneldən pleylist Əlavə edin/Çıxarın</string>
     <string name="pin_unpin_channel">Yan paneldən kanal Əlavə et/Çıxar</string>
+    <string name="pin_playlist">Yan panelə pleylist əlavə edin</string>
+    <string name="pin_channel">Yan panelə kanal əlavə edin</string>
     <string name="pinned_to_sidebar">Yan panelə əlavə edildi</string>
     <string name="unpin_from_sidebar">Yan paneldən çıxarın</string>
     <string name="unpinned_from_sidebar">Yan paneldən silindi</string>
@@ -308,6 +311,7 @@
     <string name="action_pip">PIP</string>
     <string name="action_video_info">Video təsviri</string>
     <string name="action_screen_off">Ekranı söndürmək</string>
+    <string name="action_sound_off">Səsi söndürmək</string>
     <string name="action_playback_queue">Oxutma növbəsi</string>
     <string name="action_video_speed">Videonun sürəti</string>
     <string name="action_subtitles">Subtitrlar</string>
@@ -401,6 +405,7 @@
     <string name="player_volume">Səs həcmi</string>
     <string name="play_video">Oxut</string>
     <string name="remember_position_of_short_videos">Qısa videoların mövqeyini yadda saxla (5 dəqiqədən az)</string>
+    <string name="remember_position_of_live_videos">Canlı yayım mövqeyini yadda saxla</string>
     <string name="player_show_tooltips">Düymə üçün göstərişləri göstərin</string>
     <string name="action_like_unset">Bəyənmə təyin olunmayıb</string>
     <string name="action_dislike_unset">Bəyənməmə təyin olunmayıb</string>
@@ -412,7 +417,8 @@
     <string name="pressing_back">GERİ düyməsini basaraq</string>
     <string name="player_number_key_seek">Rəqəm düymələri ilə axtarın</string>
     <string name="save_remove_playlist">Pleylistlər bölməsindən pleylist Əlavə edin/Çıxarın</string>
-    <string name="remove_playlist">Pleylistləri Pleylistlər bölməsindən həmişəlik silin</string>
+    <string name="save_playlist">Pleylistlər bölməsinə pleylist əlavə edin</string>
+    <string name="remove_playlist">Pleylistlər bölməsindən pleylisti həmişəlik silin</string>
     <string name="removed_from_playlists">Pleylistlər bölməsindən silindi</string>
     <string name="saved_to_playlists">Pleylistlər bölməsinə əlavə edildi</string>
     <string name="create_playlist">Pleylist düzəldin</string>
@@ -433,7 +439,7 @@
     <string name="sleep_timer_desc">İstifadəçi bir saat ərzində pultdan istifadə etməyibsə, oxutmanı dayandırın</string>
     <string name="disable_vsync">Vsync-ə keçidi söndürün</string>
     <string name="disable_vsync_desc">Bu seçim ekranın şaquli sinxronizasiya siqnalı ilə kadrların uyğunlaşdırılmasını qeyri-aktiv edir. Bu, CPU resurslarını buraxmaqla aşağı səviyyəli cihazlarda performansı yaxşılaşdıra bilər.</string>
-    <string name="skip_codec_profile_check">Kodek profil səviyyəsi yoxlamasını keçin</string>
+    <string name="skip_codec_profile_check">Kodek profil səviyyəsi yoxlamasını ötürün</string>
     <string name="skip_codec_profile_check_desc">Videoya başladıqda kodek dəstəyini yoxlamayın. Səhv olan proqram təminatında faydalı ola bilər.</string>
     <string name="force_sw_codec">SW video dekoderini məcbur edin</string>
     <string name="force_sw_codec_desc">Demək olar ki, istənilən videonu oxuda bilər, lakin performans çox zəifdir.</string>
@@ -469,6 +475,7 @@
     <string name="action_subscribe_on">Abunə Qoşulu</string>
     <!-- END Moved strings -->
     <string name="skip_24_rate">24 kadr formatlarını ötürün (real kino rejimi düzəldildi?)</string>
+    <string name="skip_shorts">Short-ları ötürün</string>
     <string name="player_disable_suggestions">Təklifləri deaktiv edin</string>
     <string name="feedback">Rəy</string>
     <string name="sources">Mənbələr</string>
@@ -502,6 +509,7 @@
     <string name="thumb_quality_middle">Videonun ortası</string>
     <string name="thumb_quality_end">Videonun sonu</string>
     <string name="content_block_status">SponsorBlock statusunu yoxlayın</string>
+    <string name="dearrow_status">DeArrow statusunu yoxlayın</string>
     <string name="player_show_quality_info_bitrate">Keyfiyyət məlumatına bit sürəti əlavə edin</string>
     <string name="player_speed_button_old_behavior">Sürət düyməsinin köhnə davranışını bərpa edin</string>
     <string name="protect_settings_with_password">Bütün parametrləri parolla qoruyun</string>
@@ -546,6 +554,7 @@
     <string name="clear_search_history">Axtarış tarixçəsini təmizlə</string>
     <string name="remove_from_subscriptions">Gizlət</string>
     <string name="player_long_speed_list">Sürət siyahısında daha çox sürət</string>
+    <string name="player_extra_long_speed_list">Əlavə uzun sürət siyahısı</string>
     <string name="alt_app_icon">Alternativ proqram ikonası (yenidən başlamalıdır)</string>
     <string name="network_stack">%s şəbəkə yığınına üstünlük verin</string>
     <string name="player_network_stack">Şəbəkə yığını</string>
@@ -563,7 +572,8 @@
     <string name="sony_frame_drop_fix_desc">Sony TV və bəzi digər cihazlarda gecikmələri düzəldin. Qeyd: audio sinxronizasiya ilə bağlı mümkün problemlər.</string>
     <string name="audio_language">Audio dili</string>
     <string name="old_home_look">Ev bölməsinin köhnə görünüşü</string>
-    <string name="hide_shorts_everywhere">Hide shorts everywhere</string>
+    <string name="old_channel_look">Kanal səhifəsinin köhnə görünüşü</string>
+    <string name="hide_shorts_everywhere">Shortları hər yerdə gizlədin</string>
     <string name="update_found">Yeniləmə</string>
     <string name="volume_boost_warning">Həddini aşan hər hansı parametrlər dinamikləri zədələyə bilər</string>
     <string name="play_video_incognito">Gizli oxudun</string>
@@ -597,6 +607,7 @@
     <string name="player_global_focus">Pleyer düymələri sıraları arasında qüsursuz naviqasiya</string>
     <string name="auto_history">Avto (hesab parametrlərindən istifadə edin)</string>
     <string name="remember_position_subscriptions">Abunəliklərdə son baxılan mövqeyi yadda saxla</string>
+    <string name="remember_position_pinned">Saxlanmış pleylistlərdə sonuncu baxılmış mövqeyi yadda saxla</string>
     <string name="msg_player_unknown_error">Naməlum xəta</string>
     <string name="header_notifications">Bildirişlər</string>
     <string name="disable_search_history">Axtarış tarixçəsini söndür</string>
@@ -613,15 +624,38 @@
     <string name="prefer_avc_over_vp9_desc">XƏBƏRDARLIQ: maksimum 1080p</string>
     <string name="play_next">Növbətini oxudun</string>
     <string name="hide_watched_from_subscriptions">Baxılmış videoları Abunəliklərdən gizlət</string>
+    <string name="hide_watched_from_notifications">İzlənmiş videoları Bildirişlərdən gizlədin</string>
     <string name="hide_unwanted_content">İstənməyən məzmunu gizlət</string>
     <string name="hide_watched_from_home">Baxılmış videoları Evdən gizlət</string>
+    <string name="hide_watched_from_watch_later">Baxılmış videoları Sonra izlə pleylistindən gizlədin</string>
     <string name="remote_control_permission">Arxa fon Uzaqdan idarəetməsi Overlay icazəsi tələb edir</string>
     <string name="login_from_browser">Brauzerdən daxil olun</string>
     <string name="disable_remote_history">Uzaqdan idarə etmədən istifadə edərkən tarixçəni söndürün</string>
     <string name="keyboard_fix">OK düyməsini basaraq klaviaturanı göstərilməsini düzəldin (G20s və s.)</string>
     <string name="nothing_found">Heç nə tapılmadı</string>
-    <string name="auto_frame_rate_desc">Bu seçim kameranın sürətlə hərəkət etdiyi səhnələrdə titrəməyi aradan qaldırır, məsələn. idman yayımı</string>
+    <string name="auto_frame_rate_desc">Bu seçim kameranın sürətlə hərəkət etdiyi səhnələrdə titrəməni aradan qaldırır, məsələn. idman yayımı</string>
     <string name="channel_filter_hint">Kanalları filterlə</string>
     <string name="player_loop_shorts">Shorts təkrarla</string>
     <string name="player_quick_shorts_skip">Shorts sol/sağ düymələr ilə ötür</string>
+    <string name="channels_filter">Kanallar bölməsindəki kanallar siyahısını filtrləyin</string>
+    <string name="channel_search_bar">Kanal səhifəsindəki axtarış çubuğu</string>
+    <string name="header_sports">İdman</string>
+    <string name="keep_finished_activities">Bitmiş fəaliyyətləri saxlayın</string>
+    <string name="disable_channels_service">Kanallar xidmətini deaktiv edin</string>
+    <string name="replace_titles">Başlıqları dəyişdirin</string>
+    <string name="enable">Aktivləşdirin</string>
+    <string name="more_info">Daha çox məlumat</string>
+    <string name="about_sponsorblock">SponsorBlock haqqında</string>
+    <string name="about_dearrow">DeArrow haqqında</string>
+    <string name="replace_thumbnails">Miniatürləri dəyişdirin</string>
+    <string name="crowdsourced_thumbnails">Crowdsourced miniatürlər</string>
+    <string name="crowdsoursed_titles">Crowdsourced başlıqlar</string>
+    <string name="dearrow_not_submitted_thumbs">Təqdim edilməmiş miniatürləri haradan götürmək olar</string>
+    <string name="pitch_effect">Pitch effekti</string>
+    <string name="fullscreen_mode">Tam ekran rejimi (sistem kənarları olmadan)</string>
+    <string name="player_only_mode">Video proqramdan kənarda açılırsa, yalnız pleyeri göstərin</string>
+    <string name="pinned_channel_rows">Saxlanmış kanalı sətirlər kimi göstərin</string>
+    <string name="prefer_ipv4">IPv4 DNS-ə üstünlük verin</string>
+    <string name="prefer_ipv4_desc">Tətbiqin ümumiyyətlə işləmədiyi vəziyyətləri düzəldə bilər.\nQeyd. Donmalara və xətalara səbəb ola bilər (xüsusilə Android 8 cihazlarında və ya Dune HD-də)</string>
+    <string name="long_press_for_settings">PARAMETRLƏR ÜÇÜN BASIB SAXLAYIN</string>
 </resources>

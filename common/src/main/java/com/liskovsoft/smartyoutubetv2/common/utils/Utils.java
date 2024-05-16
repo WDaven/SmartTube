@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.AlarmManager;
 import android.app.Instrumentation;
 import android.app.KeyguardManager;
 import android.app.Notification;
@@ -47,7 +48,8 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
+import com.jakewharton.processphoenix.ProcessPhoenix;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaGroup;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.helpers.PermissionHelpers;
@@ -73,6 +75,8 @@ import com.liskovsoft.smartyoutubetv2.common.misc.MotherActivity;
 import com.liskovsoft.smartyoutubetv2.common.misc.RemoteControlService;
 import com.liskovsoft.smartyoutubetv2.common.misc.RemoteControlWorker;
 import com.liskovsoft.smartyoutubetv2.common.misc.ScreensaverManager;
+import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
+import com.liskovsoft.smartyoutubetv2.common.prefs.PlayerData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.RemoteControlData;
 
 import java.util.LinkedHashMap;
@@ -83,6 +87,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
+    private static final String REMOTE_CONTROL_RECEIVER_CLASS_NAME = "com.liskovsoft.smartyoutubetv2.common.misc.RemoteControlReceiver";
+    private static final String UPDATE_CHANNELS_RECEIVER_CLASS_NAME = "com.liskovsoft.leanbackassistant.channels.UpdateChannelsReceiver";
+    private static final String BOOTSTRAP_ACTIVITY_CLASS_NAME = "com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity";
     private static final String TASK_ID = RemoteControlWorker.class.getSimpleName();
     private static final String TAG = Utils.class.getSimpleName();
     private static final String QR_CODE_URL_TEMPLATE = "https://api.qrserver.com/v1/create-qr-code/?data=%s";
@@ -91,6 +98,7 @@ public class Utils {
     public static final Handler sHandler = new Handler(Looper.getMainLooper());
     public static final float[] SPEED_LIST_LONG =
             new float[]{0.25f, 0.5f, 0.75f, 0.80f, 0.85f, 0.90f, 0.95f, 1.0f, 1.05f, 1.1f, 1.15f, 1.2f, 1.25f, 1.3f, 1.4f, 1.5f, 1.75f, 2f, 2.25f, 2.5f, 2.75f, 3.0f, 3.25f, 3.5f, 3.75f, 4.0f};
+    public static final float[] SPEED_LIST_EXTRA_LONG = Helpers.range(0.05f, 4f, 0.05f);
     public static final float[] SPEED_LIST_SHORT =
             new float[] {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f, 2.25f, 2.5f, 2.75f, 3.0f, 3.25f, 3.5f, 3.75f, 4.0f};
     private static boolean sIsGlobalVolumeFixed;
@@ -159,7 +167,8 @@ public class Utils {
         //intent.setClass(context, ViewManager.instance(context).getActivity(SplashView.class));
         PackageManager packageManager = context.getPackageManager();
         if (intent.resolveActivity(packageManager) != null) {
-            context.startActivity(intent);
+            SplashPresenter.instance(context).applyNewIntent(intent);
+            //context.startActivity(intent);
         } else {
             // Fallback to the chooser dialog
             showMultiChooser(context, url);
@@ -289,7 +298,12 @@ public class Utils {
                 if (normalize) {
                     streamMaxVolume /= 2; // max volume is too loud
                 }
-                audioManager.setStreamVolume(GLOBAL_VOLUME_TYPE, (int) Math.ceil(streamMaxVolume / 100f * volume), 0);
+                try {
+                    audioManager.setStreamVolume(GLOBAL_VOLUME_TYPE, (int) Math.ceil(streamMaxVolume / 100f * volume), 0);
+                } catch (SecurityException e) {
+                    // Not allowed to change Do Not Disturb state
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -370,6 +384,34 @@ public class Utils {
         }
     }
 
+    @SuppressLint("StringFormatMatches")
+    public static void volumeUpPlayer(Context context, PlayerManager player, boolean up) {
+        if (player != null) {
+            int volume = (int) (player.getVolume() * 100);
+            int round = 10 - volume % 10;
+            if (round != 10) {
+                volume += round;
+            }
+            final int delta = 10; // volume step
+
+            int newVolume;
+
+            if (up) {
+                newVolume = Math.min(volume + delta, 300);
+            } else {
+                newVolume = Math.max(volume - delta, 0);
+            }
+
+            player.setVolume(newVolume / 100f);
+
+            PlayerData.instance(context).setPlayerVolume(newVolume / 100f);
+
+            // Check that volume is set.
+            // Because global value may not be supported (see FireTV Stick).
+            MessageHelpers.showMessage(context, context.getString(R.string.volume, (int) (player.getVolume() * 100)));
+        }
+    }
+
     /**
      * <a href="https://stackoverflow.com/questions/2891337/turning-on-screen-programmatically">More info</a>
      */
@@ -445,6 +487,14 @@ public class Utils {
         for (Runnable callback : callbacks) {
              sHandler.removeCallbacks(callback);
         }
+    }
+
+    public static CharSequence color(CharSequence string, int color, int start, int end) {
+        SpannableString spannable = new SpannableString(string);
+        ForegroundColorSpan foregroundColorSpan = new ForegroundColorSpan(color);
+        spannable.setSpan(foregroundColorSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        return spannable;
     }
 
     public static CharSequence color(CharSequence string, int color) {
@@ -785,5 +835,118 @@ public class Utils {
 
     public static boolean isOculusQuest() {
         return Helpers.getDeviceName().startsWith("Oculus Quest");
+    }
+
+    /**
+     * Finish the app but remain running services
+     */
+    public static void properlyFinishTheApp(Context context) {
+        ViewManager.instance(context).properlyFinishTheApp(context);
+        //forceFinishTheApp();
+    }
+
+    public static void restartTheApp(Context context) {
+        restartTheApp(context, BOOTSTRAP_ACTIVITY_CLASS_NAME);
+    }
+
+    /**
+     * Simply kills the app.
+     */
+    public static void forceFinishTheApp() {
+        Runtime.getRuntime().exit(0);
+    }
+
+    public static void updateChannels(Context context) {
+        startReceiver(context, UPDATE_CHANNELS_RECEIVER_CLASS_NAME);
+    }
+
+    public static void startRemoteControl(Context context) {
+        startReceiver(context, REMOTE_CONTROL_RECEIVER_CLASS_NAME);
+    }
+
+    private static void restartTheApp(Context context, String bootActivityClassName) {
+        try {
+            ProcessPhoenix.triggerRebirth(context, new Intent(context, Class.forName(bootActivityClassName)));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void startReceiver(Context context, String receiverClassName) {
+        // Can't use class directly! ATV module is disabled for some flavors.
+        Class<?> clazz = null;
+
+        try {
+            clazz = Class.forName(receiverClassName);
+        } catch (ClassNotFoundException e) {
+            // NOP
+        }
+
+        if (clazz != null) {
+            if (context != null) {
+                Log.d(TAG, "Starting channels receiver...");
+                Intent intent = new Intent(context, clazz);
+                try {
+                    context.sendBroadcast(intent);
+                } catch (Exception e) {
+                    // NullPointerException on MX9Pro (rk3328  7.1.2)
+                }
+            }
+        } else {
+            Log.e(TAG, "Channels receiver class not found: " + receiverClassName);
+        }
+    }
+
+    private static void exitToHome(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * More info: https://stackoverflow.com/questions/6609414/how-do-i-programmatically-restart-an-android-app
+     */
+    private static void triggerRebirth(Context context, Class<?> rootActivity) {
+        Intent intent = new Intent(context, rootActivity);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+        if (context instanceof MotherActivity) {
+            ((MotherActivity) context).finishReally();
+        }
+        Runtime.getRuntime().exit(0);
+    }
+
+    /**
+     * More info: https://stackoverflow.com/questions/6609414/how-do-i-programmatically-restart-an-android-app
+     */
+    private static void triggerRebirth2(Context context, Class<?> rootActivity) {
+        Intent mStartActivity = new Intent(context, rootActivity);
+        int mPendingIntentId = 123456;
+        int flags = PendingIntent.FLAG_CANCEL_CURRENT;
+        if (Build.VERSION.SDK_INT >= 23) {
+            // IllegalArgumentException fix: Targeting S+ (version 31 and above) requires that one of FLAG_IMMUTABLE...
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent mPendingIntent = PendingIntent.getActivity(context, mPendingIntentId, mStartActivity, flags);
+        AlarmManager mgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+        System.exit(0);
+    }
+
+    public static void triggerRebirth3(Context context, Class<?> myClass) {
+        Intent intent = new Intent(context, myClass);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+        Runtime.getRuntime().exit(0);
+    }
+
+    public static String updateTooltip(Context context, String tooltip) {
+        return GeneralData.instance(context).isFirstUseTooltipEnabled() ?
+                String.format("%s (%s)", tooltip, context.getString(R.string.long_press_for_settings)) : tooltip;
     }
 }

@@ -1,12 +1,13 @@
 package com.liskovsoft.smartyoutubetv2.common.utils;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 
-import com.liskovsoft.mediaserviceinterfaces.MediaItemService;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaItem;
-import com.liskovsoft.mediaserviceinterfaces.data.PlaylistInfo;
+import com.liskovsoft.mediaserviceinterfaces.yt.MediaItemService;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaItem;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.PlaylistInfo;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.sharedutils.mylogger.Log;
@@ -432,6 +433,7 @@ public class AppDialogUtil {
         );
     }
 
+    @TargetApi(19)
     private static List<OptionItem> fromSubtitleStyles(Context context, PlayerData playerData, List<SubtitleStyle> subtitleStyles) {
         List<OptionItem> styleOptions = new ArrayList<>();
 
@@ -656,7 +658,9 @@ public class AppDialogUtil {
     public static OptionCategory createSpeedListCategory(Context context, PlayerManager playbackController, PlayerData playerData) {
         List<OptionItem> items = new ArrayList<>();
 
-        for (float speed : PlayerTweaksData.instance(context).isLongSpeedListEnabled() ? Utils.SPEED_LIST_LONG : Utils.SPEED_LIST_SHORT) {
+        PlayerTweaksData data = PlayerTweaksData.instance(context);
+        for (float speed : data.isLongSpeedListEnabled() ? Utils.SPEED_LIST_LONG :
+                data.isExtraLongSpeedListEnabled() ? Utils.SPEED_LIST_EXTRA_LONG : Utils.SPEED_LIST_SHORT) {
             items.add(UiOptionItem.from(
                     String.valueOf(speed),
                     optionItem -> {
@@ -708,6 +712,10 @@ public class AppDialogUtil {
                 option -> playerTweaksData.enableLongSpeedList(option.isSelected()),
                 playerTweaksData.isLongSpeedListEnabled()));
 
+        options.add(UiOptionItem.from(context.getString(R.string.player_extra_long_speed_list),
+                option -> playerTweaksData.enableExtraLongSpeedList(option.isSelected()),
+                playerTweaksData.isExtraLongSpeedListEnabled()));
+
         String title = context.getString(R.string.player_other);
 
         return OptionCategory.from(PLAYER_SPEED_MISC_ID, OptionCategory.TYPE_CHECKBOX_LIST, title, options);
@@ -757,6 +765,39 @@ public class AppDialogUtil {
         }
 
         dialogPresenter.appendRadioCategory(context.getString(R.string.seek_interval), options);
+    }
+
+    public static void removeFromWatchLaterPlaylist(Context context, Video video) {
+        removeFromWatchLaterPlaylist(context, video, null);
+    }
+
+    public static void removeFromWatchLaterPlaylist(Context context, Video video, Runnable onSuccess) {
+        if (video == null || !YouTubeSignInService.instance().isSigned()) {
+            return;
+        }
+
+        MediaItemService itemManager = YouTubeMediaItemService.instance();
+
+        Disposable playlistsInfoAction = itemManager.getPlaylistsInfoObserve(video.videoId)
+                .subscribe(
+                        videoPlaylistInfos -> {
+                            PlaylistInfo watchLater = videoPlaylistInfos.get(0);
+
+                            if (watchLater.isSelected()) {
+                                Observable<Void> editObserve = itemManager.removeFromPlaylistObserve(watchLater.getPlaylistId(), video.videoId);
+
+                                RxHelper.execute(editObserve, () -> {
+                                    if (onSuccess != null) {
+                                        onSuccess.run();
+                                    }
+                                });
+                            }
+                        },
+                        error -> {
+                            // Fallback to something on error
+                            Log.e(TAG, "Get playlists error: %s", error.getMessage());
+                        }
+                );
     }
 
     public static void showAddToPlaylistDialog(Context context, Video video, VideoMenuCallback callback) {
@@ -817,6 +858,10 @@ public class AppDialogUtil {
     }
 
     private static void addRemoveFromPlaylist(Context context, Video video, VideoMenuCallback callback, String playlistId, boolean add) {
+        if (video == null) {
+            return;
+        }
+
         Observable<Void> editObserve;
         MediaItemService itemManager = YouTubeMediaItemService.instance();
 

@@ -261,8 +261,8 @@
     <string name="enable_voice_search">Globale Sprachsuche aktivieren (Firmware-Unterstützung erforderlich)</string>
     <string name="subscribe_unsubscribe_from_channel">Kanal abonnieren/nicht mehr abonnieren</string>
     <string name="app_backup_restore">Sichern/Wiederherstellen</string>
-    <string name="app_backup">Daten sichern</string>
-    <string name="app_restore">Daten aus Sicherung wiederherstellen</string>
+    <string name="app_backup">App-Daten sichern</string>
+    <string name="app_restore">App-Daten wiederherstellen</string>
     <string name="skip_each_segment_once">Jedes Segment nur einmal überspringen</string>
     <string name="disable_ok_long_press">Langes Drücken der OK-Taste deaktivieren</string>
     <string name="disable_ok_long_press_desc">Vorgesehen für fehlerhafte Fernbedienungen, bei denen die OK-Taste nicht richtig funktioniert</string>
@@ -338,7 +338,7 @@
     <string name="hide_upcoming">Anstehende Videos in Abos ausblenden</string>
     <string name="hide_upcoming_channel">Anstehende Videos in Kanäle ausblenden</string>
     <string name="hide_upcoming_home">Anstehende Videos in Start ausblenden</string>
-    <string name="search_background_playback">Bild-in-Bild öffnen bei Suche/Kanal öffnen</string>
+    <string name="search_background_playback">Hintergrund-Wiedergabe beim Suchen/Öffnen eines Kanals</string>
     <string name="trending_row_name">Trends</string>
     <string name="player_seek_type">Verhalten beim Spulen</string>
     <string name="player_seek_regular">Normal</string>
@@ -475,6 +475,7 @@
     <string name="action_subscribe_on">Abonnieren an</string>
     <!-- END Moved strings -->
     <string name="skip_24_rate">24fps-Formate überspringen (Echter-Kinomodus-Fix?)</string>
+    <string name="skip_shorts">Shorts überspringen</string>
     <string name="player_disable_suggestions">Vorschläge deaktivieren</string>
     <string name="feedback">Feedback</string>
     <string name="sources">Quellen</string>
@@ -507,8 +508,8 @@
     <string name="thumb_quality_start">Start des Videos</string>
     <string name="thumb_quality_middle">Mitte des Videos</string>
     <string name="thumb_quality_end">Ende des Videos</string>
-    <string name="content_block_status">Status von SponsorBlock prüfen</string>
-    <string name="dearrow_status">Status von DeArrow prüfen</string>
+    <string name="content_block_status">Server-Status von SponsorBlock prüfen</string>
+    <string name="dearrow_status">Server-Status von DeArrow prüfen</string>
     <string name="player_show_quality_info_bitrate">Bitrate zu den Qualitätsinfos hinzufügen</string>
     <string name="player_speed_button_old_behavior">Altes Verhalten der Geschwindigkeitstaste wiederherstellen</string>
     <string name="protect_settings_with_password">Alle Einstellungen mit einem Passwort schützen</string>
@@ -552,7 +553,8 @@
     <string name="sort_by_rating">Bewertung</string>
     <string name="clear_search_history">Suchverlauf löschen</string>
     <string name="remove_from_subscriptions">Ausblenden</string>
-    <string name="player_long_speed_list">Mehr Optionen für Video-Geschwindigkeit</string>
+    <string name="player_long_speed_list">Lange Geschwindigkeitsliste</string>
+    <string name="player_extra_long_speed_list">Extra lange Geschwindigkeitsliste</string>
     <string name="alt_app_icon">Alternatives App-Symbol (Neustart erforderlich)</string>
     <string name="network_stack">Netzwerkstack %s bevorzugen</string>
     <string name="player_network_stack">Netzwerkstack</string>
@@ -589,7 +591,7 @@
     <string name="sorting_default">Standard (schnell, animierte Vorschaubilder)</string>
     <string name="content_block_exclude_channel">Diesen Kanal von SponsorBlock ausschließen</string>
     <string name="content_block_stop_excluding_channel">Diesen Kanal nicht mehr von SponsorBlock ausschließen</string>
-    <string name="player_chapter_notification">Benachrichtigung anzeigen, um schnell durch die Kapitel zu springen</string>
+    <string name="player_chapter_notification">Schnelles Springen durch die Kapitel per Popup-Benachrichtigung</string>
     <string name="subtitle_remember">Aktivierte Untertitel für jeden Kanal merken</string>
     <string name="amazon_frame_drop_fix">Frame-Drop-Fix #2</string>
     <string name="amazon_frame_drop_fix_desc">Gedacht für Amazon Stick-Geräte. Kann auch auf anderen Geräten funktionieren.</string>
@@ -605,6 +607,7 @@
     <string name="player_global_focus">Nahtlose Navigation zwischen Player-Schaltflächenreihen</string>
     <string name="auto_history">Automatisch (Kontoeinstellungen verwenden)</string>
     <string name="remember_position_subscriptions">Zuletzt angesehene Position in Abos merken</string>
+    <string name="remember_position_pinned">Zuletzt angesehene Position in angehefteten Wiedergabelisten merken</string>
     <string name="msg_player_unknown_error">Unbekannter Fehler</string>
     <string name="header_notifications">Benachrichtigungen</string>
     <string name="disable_search_history">Suchverlauf deaktivieren</string>
@@ -624,6 +627,7 @@
     <string name="hide_watched_from_notifications">Gesehene Videos in Benachrichtigungen ausblenden</string>
     <string name="hide_unwanted_content">Unerwünschte Inhalte ausblenden</string>
     <string name="hide_watched_from_home">Gesehene Videos in Start ausblenden</string>
+    <string name="hide_watched_from_watch_later">Gesehene Videos in Wiedergabeliste Später ansehen ausblenden</string>
     <string name="remote_control_permission">Hintergrund-Fernsteuerung benötigt Overlay-Berechtigung</string>
     <string name="login_from_browser">Anmeldung über Browser</string>
     <string name="disable_remote_history">Verlauf bei Verwendung der Fernsteuerung deaktivieren</string>
@@ -633,7 +637,7 @@
     <string name="channel_filter_hint">Kanäle filtern</string>
     <string name="player_loop_shorts">Shorts wiederholen</string>
     <string name="player_quick_shorts_skip">Shorts überspringen mit Links/Rechts-Tasten</string>
-    <string name="channels_filter">Liste der Kanäle innerhalb der Kanäle-Kategorie filtern</string>
+    <string name="channels_filter">Feld zum Filtern von Kanälen innerhalb der Kanäle-Kategorie anzeigen</string>
     <string name="channel_search_bar">Suchleiste innerhalb der Kanalseite</string>
     <string name="header_sports">Sport</string>
     <string name="keep_finished_activities">Beendete Aktivitäten behalten</string>
@@ -649,4 +653,10 @@
     <string name="dearrow_not_submitted_thumbs">Quelle für nicht eingereichte Vorschaubilder</string>
     <string name="pitch_effect">Tonhöhen-Effekt</string>
     <string name="fullscreen_mode">Vollbildmodus (ohne Systemleisten)</string>
+    <string name="player_only_mode">Nur den Player anzeigen, wenn das Video außerhalb der App geöffnet wird</string>
+    <string name="pinned_channel_rows">Angeheftete Kanäle als Reihen anzeigen</string>
+    <string name="prefer_ipv4">IPv4 DNS bevorzugen</string>
+    <string name="prefer_ipv4_desc">Könnte Situationen beheben, in denen die App überhaupt nicht funktioniert.\nHinweis: Kann Einfrieren und Abstürze verursachen (besonders auf Android 8 Geräten oder Dune HD)</string>
+    <string name="long_press_for_settings">LANGE DRÜCKEN FÜR EINSTELLUNGEN</string>
+    <string name="device_specific_backup">Sicherung nur für dieses Gerät</string>
 </resources>

@@ -13,32 +13,33 @@ public class PlayerTweaksData implements ProfileChangeListener {
     public static final int PLAYER_DATA_SOURCE_DEFAULT = 0;
     public static final int PLAYER_DATA_SOURCE_OKHTTP = 1;
     public static final int PLAYER_DATA_SOURCE_CRONET = 2;
-    public static final int PLAYER_BUTTON_VIDEO_ZOOM = 0b1;
-    public static final int PLAYER_BUTTON_SEARCH = 0b10;
-    public static final int PLAYER_BUTTON_PIP = 0b100;
-    public static final int PLAYER_BUTTON_SCREEN_OFF = 0b1000;
-    public static final int PLAYER_BUTTON_PLAYBACK_QUEUE = 0b10000;
-    public static final int PLAYER_BUTTON_VIDEO_SPEED = 0b100000;
-    public static final int PLAYER_BUTTON_VIDEO_STATS = 0b1000000;
-    public static final int PLAYER_BUTTON_OPEN_CHANNEL = 0b10000000;
-    public static final int PLAYER_BUTTON_SUBTITLES = 0b100000000;
-    public static final int PLAYER_BUTTON_SUBSCRIBE = 0b1000000000;
-    public static final int PLAYER_BUTTON_LIKE = 0b10000000000;
-    public static final int PLAYER_BUTTON_DISLIKE = 0b100000000000;
-    public static final int PLAYER_BUTTON_ADD_TO_PLAYLIST = 0b1000000000000;
-    public static final int PLAYER_BUTTON_PLAY_PAUSE = 0b10000000000000;
-    public static final int PLAYER_BUTTON_REPEAT_MODE = 0b100000000000000;
-    public static final int PLAYER_BUTTON_NEXT = 0b1000000000000000;
-    public static final int PLAYER_BUTTON_PREVIOUS = 0b10000000000000000;
-    public static final int PLAYER_BUTTON_HIGH_QUALITY = 0b100000000000000000;
-    public static final int PLAYER_BUTTON_VIDEO_INFO = 0b1000000000000000000;
-    public static final int PLAYER_BUTTON_SHARE = 0b10000000000000000000;
-    public static final int PLAYER_BUTTON_SEEK_INTERVAL = 0b100000000000000000000;
-    public static final int PLAYER_BUTTON_CONTENT_BLOCK = 0b1000000000000000000000;
-    public static final int PLAYER_BUTTON_CHAT = 0b10000000000000000000000;
-    public static final int PLAYER_BUTTON_VIDEO_ROTATE = 0b100000000000000000000000;
-    public static final int PLAYER_BUTTON_SCREEN_OFF_TIMEOUT = 0b1000000000000000000000000;
-    public static final int PLAYER_BUTTON_SOUND_OFF = 0b10000000000000000000000000;
+    public static final int PLAYER_BUTTON_VIDEO_ZOOM = 1;
+    public static final int PLAYER_BUTTON_SEARCH = 1 << 1;
+    public static final int PLAYER_BUTTON_PIP = 1 << 2;
+    public static final int PLAYER_BUTTON_SCREEN_OFF = 1 << 3;
+    public static final int PLAYER_BUTTON_PLAYBACK_QUEUE = 1 << 4;
+    public static final int PLAYER_BUTTON_VIDEO_SPEED = 1 << 5;
+    public static final int PLAYER_BUTTON_VIDEO_STATS = 1 << 6;
+    public static final int PLAYER_BUTTON_OPEN_CHANNEL = 1 << 7;
+    public static final int PLAYER_BUTTON_SUBTITLES = 1 << 8;
+    public static final int PLAYER_BUTTON_SUBSCRIBE = 1 << 9;
+    public static final int PLAYER_BUTTON_LIKE = 1 << 10;
+    public static final int PLAYER_BUTTON_DISLIKE = 1 << 11;
+    public static final int PLAYER_BUTTON_ADD_TO_PLAYLIST = 1 << 12;
+    public static final int PLAYER_BUTTON_PLAY_PAUSE = 1 << 13;
+    public static final int PLAYER_BUTTON_REPEAT_MODE = 1 << 14;
+    public static final int PLAYER_BUTTON_NEXT = 1 << 15;
+    public static final int PLAYER_BUTTON_PREVIOUS = 1 << 16;
+    public static final int PLAYER_BUTTON_HIGH_QUALITY = 1 << 17;
+    public static final int PLAYER_BUTTON_VIDEO_INFO = 1 << 18;
+    public static final int PLAYER_BUTTON_SHARE = 1 << 19;
+    public static final int PLAYER_BUTTON_SEEK_INTERVAL = 1 << 20;
+    public static final int PLAYER_BUTTON_CONTENT_BLOCK = 1 << 21;
+    public static final int PLAYER_BUTTON_CHAT = 1 << 22;
+    public static final int PLAYER_BUTTON_VIDEO_ROTATE = 1 << 23;
+    public static final int PLAYER_BUTTON_SCREEN_OFF_TIMEOUT = 1 << 24;
+    public static final int PLAYER_BUTTON_SOUND_OFF = 1 << 25;
+    public static final int PLAYER_BUTTON_AFR = 1 << 26;
     public static final int PLAYER_BUTTON_DEFAULT = PLAYER_BUTTON_SEARCH | PLAYER_BUTTON_PIP | PLAYER_BUTTON_SCREEN_OFF_TIMEOUT | PLAYER_BUTTON_VIDEO_SPEED |
             PLAYER_BUTTON_VIDEO_STATS | PLAYER_BUTTON_OPEN_CHANNEL | PLAYER_BUTTON_SUBTITLES | PLAYER_BUTTON_SUBSCRIBE |
             PLAYER_BUTTON_LIKE | PLAYER_BUTTON_DISLIKE | PLAYER_BUTTON_ADD_TO_PLAYLIST | PLAYER_BUTTON_PLAY_PAUSE |
@@ -75,6 +76,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
     private boolean mIsSpeedButtonOldBehaviorEnabled;
     private boolean mIsButtonLongClickEnabled;
     private boolean mIsLongSpeedListEnabled;
+    private boolean mIsExtraLongSpeedListEnabled;
     private int mPlayerDataSource;
     private boolean mUnlockAllFormats;
     private boolean mIsBufferOnStreamsDisabled;
@@ -388,12 +390,23 @@ public class PlayerTweaksData implements ProfileChangeListener {
     }
 
     public void enableLongSpeedList(boolean enable) {
+        mIsExtraLongSpeedListEnabled = false;
         mIsLongSpeedListEnabled = enable;
         persistData();
     }
 
     public boolean isLongSpeedListEnabled() {
         return mIsLongSpeedListEnabled;
+    }
+
+    public void enableExtraLongSpeedList(boolean enable) {
+        mIsLongSpeedListEnabled = false;
+        mIsExtraLongSpeedListEnabled = enable;
+        persistData();
+    }
+
+    public boolean isExtraLongSpeedListEnabled() {
+        return mIsExtraLongSpeedListEnabled;
     }
 
     public void unlockAllFormats(boolean unlock) {
@@ -544,7 +557,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
     private void restoreData() {
         String data = mPrefs.getProfileData(VIDEO_PLAYER_TWEAKS_DATA);
 
-        String[] split = Helpers.splitObject(data);
+        String[] split = Helpers.splitData(data);
 
         mIsAmlogicFixEnabled = Helpers.parseBoolean(split, 0, false);
         mIsAmazonFrameDropFixEnabled = Helpers.parseBoolean(split, 1, false);
@@ -573,13 +586,15 @@ public class PlayerTweaksData implements ProfileChangeListener {
         mIsSpeedButtonOldBehaviorEnabled = Helpers.parseBoolean(split, 23, false);
         mIsButtonLongClickEnabled = Helpers.parseBoolean(split, 24, true);
         mIsLongSpeedListEnabled = Helpers.parseBoolean(split, 25, true);
-        // PlayerDataSource was here
+        // Android 6 and below may crash running Cronet???
+        mPlayerDataSource = Helpers.parseInt(split, 26, VERSION.SDK_INT <= 23 || Helpers.equals(BuildConfig.FLAVOR, "strtarmenia") ?
+                 PLAYER_DATA_SOURCE_DEFAULT : PLAYER_DATA_SOURCE_CRONET);
         mUnlockAllFormats = Helpers.parseBoolean(split, 27, false);
         mIsDashUrlStreamsForced = Helpers.parseBoolean(split, 28, false);
         mIsSonyFrameDropFixEnabled = Helpers.parseBoolean(split, 29, false);
         mIsBufferOnStreamsDisabled = Helpers.parseBoolean(split, 30, false);
         // Cause severe garbage collector stuttering
-        mIsSectionPlaylistEnabled = Helpers.parseBoolean(split, 31, VERSION.SDK_INT > 21 && Helpers.getDeviceRam(mPrefs.getContext()) > 1_000_000_000);
+        mIsSectionPlaylistEnabled = Helpers.parseBoolean(split, 31, VERSION.SDK_INT > 21 && Helpers.getDeviceRam(mPrefs.getContext()) > 1_300_000_000);
         mIsScreenOffTimeoutEnabled = Helpers.parseBoolean(split, 32, false);
         mScreenOffTimeoutSec = Helpers.parseInt(split, 33, 0);
         mIsUIAnimationsEnabled = Helpers.parseBoolean(split, 34, false);
@@ -596,29 +611,28 @@ public class PlayerTweaksData implements ProfileChangeListener {
         mIsQuickShortsSkipEnabled = Helpers.parseBoolean(split, 45, true);
         mIsRememberPositionOfLiveVideosEnabled = Helpers.parseBoolean(split, 46, false);
         mIsOculusQuestFixEnabled = Helpers.parseBoolean(split, 47, Utils.isOculusQuest());
-        // Android 6 and below may crash running Cronet???
-        //mPlayerDataSource = Helpers.parseInt(split, 26, VERSION.SDK_INT > 23 && !Helpers.equals(BuildConfig.FLAVOR, "strtarmenia") ?
-        //        PLAYER_DATA_SOURCE_CRONET : PLAYER_DATA_SOURCE_DEFAULT);
+        // mPlayerDataSource was here
         // Cronet is buffering too, unfortunately, so leave the default as a safest method (e.g. for "strtarmenia")
-        mPlayerDataSource = Helpers.parseInt(split, 48, PLAYER_DATA_SOURCE_DEFAULT);
+        // mPlayerDataSource = Helpers.parseInt(split, 48, PLAYER_DATA_SOURCE_DEFAULT);
+        mIsExtraLongSpeedListEnabled = Helpers.parseBoolean(split, 49, false);
 
         updateDefaultValues();
     }
 
     private void persistData() {
-        mPrefs.setProfileData(VIDEO_PLAYER_TWEAKS_DATA, Helpers.mergeObject(
+        mPrefs.setProfileData(VIDEO_PLAYER_TWEAKS_DATA, Helpers.mergeData(
                 mIsAmlogicFixEnabled, mIsAmazonFrameDropFixEnabled, mIsSnapToVsyncDisabled,
                 mIsProfileLevelCheckSkipped, mIsSWDecoderForced, mIsTextureViewEnabled,
                 null, mIsSetOutputSurfaceWorkaroundEnabled, mIsAudioSyncFixEnabled, mIsKeepFinishedActivityEnabled, mIsHlsStreamsForced,
                 mIsPlaybackNotificationsDisabled, mIsTunneledPlaybackEnabled, mPlayerButtons,
                 null, mIsNoFpsPresetsEnabled, mIsRememberPositionOfShortVideosEnabled, mIsSuggestionsDisabled,
                 mIsAvcOverVp9Preferred, mIsChatPlacedLeft, mIsRealChannelIconEnabled, mPixelRatio, mIsQualityInfoBitrateEnabled,
-                mIsSpeedButtonOldBehaviorEnabled, mIsButtonLongClickEnabled, mIsLongSpeedListEnabled, null, mUnlockAllFormats,
+                mIsSpeedButtonOldBehaviorEnabled, mIsButtonLongClickEnabled, mIsLongSpeedListEnabled, mPlayerDataSource, mUnlockAllFormats,
                 mIsDashUrlStreamsForced, mIsSonyFrameDropFixEnabled, mIsBufferOnStreamsDisabled, mIsSectionPlaylistEnabled,
                 mIsScreenOffTimeoutEnabled, mScreenOffTimeoutSec, mIsUIAnimationsEnabled, mIsLikesCounterEnabled, mIsChapterNotificationEnabled,
                 mScreenOffDimmingPercents, mIsBootScreenOffEnabled, mIsPlayerUiOnNextEnabled, mIsPlayerAutoVolumeEnabled, mIsPlayerGlobalFocusEnabled,
                 mIsUnsafeAudioFormatsEnabled, mIsHighBitrateFormatsUnlocked, mIsLoopShortsEnabled, mIsQuickShortsSkipEnabled, mIsRememberPositionOfLiveVideosEnabled,
-                mIsOculusQuestFixEnabled, mPlayerDataSource
+                mIsOculusQuestFixEnabled, null, mIsExtraLongSpeedListEnabled
                 ));
     }
 

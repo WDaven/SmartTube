@@ -261,8 +261,8 @@
     <string name="enable_voice_search">Включить глобальный поиск (требуется поддержка прошивки)</string>
     <string name="subscribe_unsubscribe_from_channel">Подписаться/Отписаться от канала</string>
     <string name="app_backup_restore">Бэкап и восстановление</string>
-    <string name="app_backup">Создать бэкап данных</string>
-    <string name="app_restore">Восстановить данные из бэкапа</string>
+    <string name="app_backup">Резервное копирование данных приложения</string>
+    <string name="app_restore">Восстановить данные приложения</string>
     <string name="skip_each_segment_once">Не пропускать сегменты повторно</string>
     <string name="disable_ok_long_press">Не обрабатывать долгое удержание кнопки ОК</string>
     <string name="disable_ok_long_press_desc">Предназначено для глючных пультов, где кнопка OK не работает должным образом</string>
@@ -334,7 +334,7 @@
     <string name="hide_upcoming">Скрывать анонсы из Подписок</string>
     <string name="hide_upcoming_channel">Скрывать анонсы на Канале</string>
     <string name="hide_upcoming_home">Скрывать анонсы из Главного раздела</string>
-    <string name="search_background_playback">Переходить в режим Картинка в картинке при поиске/открытии канала</string>
+    <string name="search_background_playback">Фоновое воспроизведение при поиске/просмотре канала</string>
     <string name="trending_row_name">В тренде</string>
     <string name="player_seek_type">Поведение перемотки</string>
     <string name="player_seek_regular">Обычное</string>
@@ -467,6 +467,7 @@
     <string name="add_device_view_description">Чтобы привязать устройство, введите этот код в приложении YouTube на телефоне в разделе Настройки/Смотреть на ТВ\nПРИМЕЧАНИЕ. Работает только с клавиатурой Gboard.</string>
     <!-- END Moved strings -->
     <string name="skip_24_rate">Пропускать 24fps форматы (исправление для режима real cinema?)</string>
+    <string name="skip_shorts">Пропускать Shorts</string>
     <string name="player_disable_suggestions">Отключить рекомендации</string>
     <string name="feedback">Обратная связь</string>
     <string name="sources">Исходники</string>
@@ -499,8 +500,8 @@
     <string name="thumb_quality_start">Начало видео</string>
     <string name="thumb_quality_middle">Середина видео</string>
     <string name="thumb_quality_end">Конец видео</string>
-    <string name="content_block_status">Проверить состояние SponsorBlock</string>
-    <string name="dearrow_status">Проверить состояние DeArrow</string>
+    <string name="content_block_status">Проверить состояние сервера SponsorBlock</string>
+    <string name="dearrow_status">Проверить состояние сервера DeArrow</string>
     <string name="player_show_quality_info_bitrate">Добавлять битрейт к информации о качестве видео</string>
     <string name="player_speed_button_old_behavior">Вернуть старое поведение кнопки скорость</string>
     <string name="protect_settings_with_password">Защитить все настройки паролем</string>
@@ -545,6 +546,7 @@
     <string name="clear_search_history">Очистить историю поиска</string>
     <string name="remove_from_subscriptions">Скрыть</string>
     <string name="player_long_speed_list">Длинный список скоростей</string>
+    <string name="player_extra_long_speed_list">Очень длинный список скоростей</string>
     <string name="alt_app_icon">Альтернативный значок приложения (требуется перезагрузка)</string>
     <string name="network_stack">Предпочитать сетевой стек %s</string>
     <string name="player_network_stack">Сетевой стек</string>
@@ -582,7 +584,7 @@
     <string name="sorting_default">По умолчанию (быстро, анимированные превью)</string>
     <string name="content_block_exclude_channel">Исключить канал из SponsorBlock</string>
     <string name="content_block_stop_excluding_channel">Перестать исключать канал из SponsorBlock</string>
-    <string name="player_chapter_notification">Показывать уведомление для быстрого перехода по эпизодам</string>
+    <string name="player_chapter_notification">Быстрое перемещение по эпизодам с помощью всплывающего уведомления</string>
     <string name="subtitle_remember">Запомнить включенные субтитры для каждого канала</string>
     <string name="amazon_frame_drop_fix">Исправление выпадения кадров #2</string>
     <string name="amazon_frame_drop_fix_desc">Исправляет лаги на Amazon Stick и некоторых других устройствах.</string>
@@ -598,6 +600,7 @@
     <string name="player_global_focus">Бесшовная навигация между рядами кнопок плеера</string>
     <string name="auto_history">Auto (использовать настройки аккаунта)</string>
     <string name="remember_position_subscriptions">Запоминать последнюю просмотренную позицию в Подписках</string>
+    <string name="remember_position_pinned">Запоминать последнюю просмотренную позицию в закрепленных плейлистах</string>
     <string name="msg_player_unknown_error">Неизвестная ошибка</string>
     <string name="header_notifications">Уведомления</string>
     <string name="disable_search_history">Отключить историю поиска</string>
@@ -617,6 +620,7 @@
     <string name="hide_watched_from_notifications">Скрывать просмотренные видео из Уведомлений</string>
     <string name="hide_unwanted_content">Скрывать нежелательное содержимое</string>
     <string name="hide_watched_from_home">Скрывать просмотренные видео из Домашнего раздела</string>
+    <string name="hide_watched_from_watch_later">Скрывать просмотренные видео из плейлиста Смотреть позже</string>
     <string name="remote_control_permission">Фоновое Дистанционное управление требует разрешения Перекрывать другие окна</string>
     <string name="login_from_browser">Войти через браузер</string>
     <string name="disable_remote_history">Отключить историю во время дистанционного управления</string>
@@ -626,7 +630,7 @@
     <string name="channel_filter_hint">Фильтровать каналы</string>
     <string name="player_loop_shorts">Зацикливать короткие видео</string>
     <string name="player_quick_shorts_skip">Переключать короткие видео кнопками лево/право</string>
-    <string name="channels_filter">Фильтровать список каналов в разделе Каналы</string>
+    <string name="channels_filter">Показывать поле Фильтровать каналы в разделе Каналы</string>
     <string name="channel_search_bar">Панель поиска на странице канала</string>
     <string name="header_sports">Спорт</string>
     <string name="replace_titles">Заменять заголовки</string>
@@ -640,4 +644,11 @@
     <string name="dearrow_not_submitted_thumbs">Откуда брать не присланные миниатюры</string>
     <string name="pitch_effect">Эффект высоты тона</string>
     <string name="fullscreen_mode">Полноэкранный режим (без системных панелей)</string>
+    <string name="player_only_mode">Показывать только плеер, если видео открыто вне приложения</string>
+    <string name="pinned_channel_rows">Отображать закрепленный канал в виде строк</string>
+    <string name="prefer_ipv4">Предпочитать IPv4 DNS</string>
+    <string name="prefer_ipv4_desc">Можеть исправить случаи, когда приложение вообще не работает.\nВнимание. На некоторых устройствах могут быть вылеты приложения (особенно на Android 8 и приставке Dune HD)</string>
+    <string name="long_press_for_settings">ДЛИТЕЛЬНОЕ НАЖАТИЕ ДЛЯ НАСТРОЕК</string>
+    <string name="device_specific_backup">Резервное копирование только для этого устройства</string>
+    <string name="local_backup">Локальное резервное копирование</string>
 </resources>

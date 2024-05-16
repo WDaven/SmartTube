@@ -3,13 +3,13 @@ package com.liskovsoft.smartyoutubetv2.common.app.presenters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 
-import com.liskovsoft.mediaserviceinterfaces.ContentService;
-import com.liskovsoft.mediaserviceinterfaces.HubService;
-import com.liskovsoft.mediaserviceinterfaces.MediaItemService;
-import com.liskovsoft.mediaserviceinterfaces.NotificationsService;
-import com.liskovsoft.mediaserviceinterfaces.SignInService;
-import com.liskovsoft.mediaserviceinterfaces.data.Account;
-import com.liskovsoft.mediaserviceinterfaces.data.MediaGroup;
+import com.liskovsoft.mediaserviceinterfaces.yt.ContentService;
+import com.liskovsoft.mediaserviceinterfaces.yt.MotherService;
+import com.liskovsoft.mediaserviceinterfaces.yt.MediaItemService;
+import com.liskovsoft.mediaserviceinterfaces.yt.NotificationsService;
+import com.liskovsoft.mediaserviceinterfaces.yt.SignInService;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.Account;
+import com.liskovsoft.mediaserviceinterfaces.yt.data.MediaGroup;
 import com.liskovsoft.sharedutils.helpers.Helpers;
 import com.liskovsoft.sharedutils.helpers.ScreenHelper;
 import com.liskovsoft.sharedutils.locale.LocaleUtility;
@@ -43,7 +43,7 @@ import com.liskovsoft.smartyoutubetv2.common.prefs.AccountsData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.GeneralData;
 import com.liskovsoft.smartyoutubetv2.common.prefs.MainUIData;
 import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
-import com.liskovsoft.youtubeapi.service.YouTubeHubService;
+import com.liskovsoft.youtubeapi.service.YouTubeMotherService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +82,6 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
     private long mLastUpdateTimeMs;
     private int mBootSectionIndex;
     private int mBootstrapSectionId = -1;
-    private MediaGroup mLastScrollGroup;
 
     private BrowsePresenter(Context context) {
         super(context);
@@ -98,11 +97,11 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
         MediaServiceManager.instance().addAccountListener(this);
         ScreenHelper.updateScreenInfo(context);
 
-        HubService hubService = YouTubeHubService.instance();
-        mContentService = hubService.getContentService();
-        mItemService = hubService.getMediaItemService();
-        mSignInService = hubService.getSignInService();
-        mNotificationsService = hubService.getNotificationsService();
+        MotherService service = YouTubeMotherService.instance();
+        mContentService = service.getContentService();
+        mItemService = service.getMediaItemService();
+        mSignInService = service.getSignInService();
+        mNotificationsService = service.getNotificationsService();
         mDeArrowProcessor = new DeArrowProcessor(getContext(), this::syncItem);
         mActions = new ArrayList<>();
 
@@ -150,8 +149,21 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
     }
 
     private void saveSelectedItems() {
-        if (mCurrentVideo != null && mCurrentVideo.belongsToSubscriptions() && mGeneralData.isRememberSubscriptionsPositionEnabled()) {
-            mGeneralData.setSelectedSubscriptionsItem(mCurrentVideo);
+        // Fix position reset when jumping between sections
+        if (mCurrentVideo != null && mCurrentVideo.getPositionInsideGroup() == 0 && (System.currentTimeMillis() - mCurrentVideo.timestamp) < 10_000) {
+            return;
+        }
+
+        if ((isSubscriptionsSection() && mGeneralData.isRememberSubscriptionsPositionEnabled()) ||
+                (isPinnedSection() && mGeneralData.isRememberPinnedPositionEnabled())) {
+            mGeneralData.setSelectedItem(mCurrentSection.getId(), mCurrentVideo);
+        }
+    }
+
+    private void restoreSelectedItems() {
+        if ((isSubscriptionsSection() && mGeneralData.isRememberSubscriptionsPositionEnabled()) ||
+                (isPinnedSection() && mGeneralData.isRememberPinnedPositionEnabled())) {
+            getView().selectSectionItem(mGeneralData.getSelectedItem(mCurrentSection.getId()));
         }
     }
 
@@ -212,8 +224,8 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
         for (Video item : pinnedItems) {
             if (item != null) {
-                if (item.sectionId == -1) {
-                    BrowseSection section = new BrowseSection(item.hashCode(), item.getTitle(), BrowseSection.TYPE_GRID, item.getCardImageUrl(), false, item);
+                if (item.sectionId == -1) { // pinned channel or playlist
+                    BrowseSection section = createPinnedSection(item);
                     mSections.add(section);
                 } else {
                     BrowseSection section = mSectionsMapping.get(item.sectionId);
@@ -231,7 +243,7 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
         for (Video item : pinnedItems) {
             if (item != null && item.sectionId == -1) {
-                mGridMapping.put(item.hashCode(), createPinnedAction(item));
+                createPinnedMapping(item);
             }
         }
     }
@@ -428,8 +440,10 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
     @Override
     public void onSectionFocused(int sectionId) {
-        saveSelectedItems();
-        updateSection(sectionId);
+        saveSelectedItems(); // save previous state
+        mCurrentSection = findSectionById(sectionId);
+        mCurrentVideo = null; // fast scroll through the sections (fix empty selected item)
+        updateCurrentSection();
     }
 
     @Override
@@ -495,9 +509,10 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
         }
 
         mGeneralData.addPinnedItem(item);
-        mGridMapping.put(item.hashCode(), createPinnedAction(item));
 
-        BrowseSection newSection = new BrowseSection(item.hashCode(), item.getTitle(), BrowseSection.TYPE_GRID, item.getCardImageUrl(), false, item);
+        createPinnedMapping(item);
+
+        BrowseSection newSection = createPinnedSection(item);
         Helpers.removeIf(mSections, section -> section.getId() == newSection.getId());
         mSections.add(newSection);
         getView().addSection(-1, newSection);
@@ -522,6 +537,7 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
     public void unpinItem(Video item) {
         mGeneralData.removePinnedItem(item);
+        mGeneralData.removeSelectedItem(item.hashCode());
 
         BrowseSection section = null;
 
@@ -551,11 +567,9 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
     }
 
     public void refresh(boolean focusOnContent) {
-        if (mCurrentSection != null) {
-            updateSection(mCurrentSection.getId());
-            if (focusOnContent && getView() != null) {
-                getView().focusOnContent();
-            }
+        updateCurrentSection();
+        if (focusOnContent && getView() != null) {
+            getView().focusOnContent();
         }
     }
 
@@ -563,10 +577,8 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
         mLastUpdateTimeMs = System.currentTimeMillis();
     }
 
-    private void updateSection(int sectionId) {
+    private void updateCurrentSection() {
         disposeActions();
-
-        mCurrentSection = findSectionById(sectionId);
 
         if (getView() == null || mCurrentSection == null) {
             return;
@@ -703,9 +715,7 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             return;
         }
 
-        if (isSubscriptionsSection() && mGeneralData.isRememberSubscriptionsPositionEnabled()) {
-            getView().selectSectionItem(mGeneralData.getSelectedSubscriptionsItem());
-        }
+        restoreSelectedItems();
 
         Disposable updateAction = group
                 .subscribe(
@@ -753,13 +763,6 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             return;
         }
 
-        if (mLastScrollGroup == group.getMediaGroup()) {
-            Log.d(TAG, "Can't continue group. Another action is running.");
-            return;
-        }
-
-        mLastScrollGroup = group.getMediaGroup();
-
         Log.d(TAG, "continueGroup: start continue group: " + group.getTitle());
 
         // Small amount of items == small load time. Loading bar are useless?
@@ -793,7 +796,6 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
                             if (getView() != null) {
                                 getView().showProgressBar(false);
                             }
-                            mLastScrollGroup = null;
                         }
                 );
 
@@ -845,7 +847,6 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
     private void disposeActions() {
         RxHelper.disposeActions(mActions);
         Utils.removeCallbacks(mRefreshSection);
-        mLastScrollGroup = null;
         mLastUpdateTimeMs = 0;
     }
 
@@ -854,7 +855,7 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
             return;
         }
 
-        updateVideoGrid(mCurrentSection, ChannelUploadsPresenter.instance(getContext()).obtainPlaylistObservable(item), 1, true);
+        updateVideoGrid(mCurrentSection, ChannelUploadsPresenter.instance(getContext()).obtainUploadsObservable(item), 1, true);
         //ChannelPresenter.instance(getContext()).obtainUploadsRowObservable(item, row -> updateVideoGrid(mCurrentSection, row, 1, true));
     }
 
@@ -967,8 +968,12 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
         return Helpers.equalsAny(mediaGroup.getTitle(), getContext().getString(R.string.trending_row_name)) ? 0 : -1;
     }
 
-    private Observable<MediaGroup> createPinnedAction(Video item) {
-        return ChannelUploadsPresenter.instance(getContext()).obtainPlaylistObservable(item);
+    private Observable<MediaGroup> createPinnedGridAction(Video item) {
+        return ChannelUploadsPresenter.instance(getContext()).obtainUploadsObservable(item);
+    }
+
+    private Observable<List<MediaGroup>> createPinnedRowAction(Video item) {
+        return ChannelPresenter.instance(getContext()).obtainChannelObservable(item.channelId);
     }
 
     /**
@@ -996,6 +1001,14 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
     public boolean isSubscriptionsSection() {
         return isSection(MediaGroup.TYPE_SUBSCRIPTIONS);
+    }
+
+    public boolean isPinnedSection() {
+        return mCurrentSection != null && isPinnedId(mCurrentSection.getId());
+    }
+
+    private boolean isPinnedId(int id) {
+        return id > 100;
     }
 
     private boolean isSection(int sectionId) {
@@ -1054,5 +1067,22 @@ public class BrowsePresenter extends BasePresenter<BrowseView> implements Sectio
 
         mSections.clear();
         appendToSections(getContext().getString(R.string.header_notifications), R.drawable.icon_notification, new PasswordError(getContext()));
+    }
+
+    private void createPinnedMapping(Video item) {
+        if (enableRows(item)) {
+            mRowMapping.put(item.hashCode(), createPinnedRowAction(item));
+        } else {
+            mGridMapping.put(item.hashCode(), createPinnedGridAction(item));
+        }
+    }
+
+    private BrowseSection createPinnedSection(Video item) {
+        return new BrowseSection(
+                item.hashCode(), item.getTitle(), enableRows(item) ? BrowseSection.TYPE_ROW : BrowseSection.TYPE_GRID, item.getCardImageUrl(), false, item);
+    }
+
+    private boolean enableRows(Video item) {
+        return mMainUIData.isPinnedChannelRowsEnabled() && item.hasChannel() && !item.isPlaylistAsChannel();
     }
 }

@@ -53,11 +53,12 @@ dependencies {
     testImplementation 'junit:junit:' + junitVersion
     testImplementation 'org.robolectric:robolectric:' + robolectricVersion
     androidTestImplementation 'androidx.test.ext:junit:' + testXSupportLibraryVersion
-    
+
     implementation project(':sharedutils')
     implementation project(':fragment-1.1.0')
     implementation project(':mediaserviceinterfaces')
     implementation project(':youtubeapi')
+    implementation project(':googleapi')
 
     implementation 'io.reactivex.rxjava2:rxandroid:' + rxAndroidVersion
     implementation 'io.reactivex.rxjava2:rxjava:' + rxJavaVersion
@@ -90,6 +91,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:' + kotlinCoreVersion
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + kotlinVersion
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:' + kotlinxVersion
+
+    implementation 'com.jakewharton:process-phoenix:' + phoenixVersion
 
     stbetaImplementation project(':leanbackassistant')
     ststableImplementation project(':leanbackassistant')
